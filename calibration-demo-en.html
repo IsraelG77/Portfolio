@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calibration Session Planner — Demo | Israel Gilbernon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #0f1117;
+      --sf:      #1a1d27;
+      --sf2:     #22263a;
+      --bd:      #2e3347;
+      --text:    #e8eaf0;
+      --muted:   #8b90a8;
+      --r:       12px;
+      --latam:   #6c63ff;
+      --na:      #00c9a7;
+      --emea:    #ffd166;
+      --apac:    #ff6b6b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 14px; line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 3px; }
+
+    /* ── NAV ─────────────────────────────────────────────────────── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(15,17,23,.92); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--bd);
+      padding: 0 28px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .nav-title { font-size: 15px; font-weight: 700; letter-spacing: -.3px; }
+    .nav-right  { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .lang-btn {
+      background: none; border: 1px solid var(--bd); border-radius: 6px;
+      color: var(--muted); font-size: 11px; font-weight: 700;
+      padding: 4px 10px; cursor: pointer; letter-spacing: .5px;
+      transition: all .15s;
+    }
+    .lang-btn.active, .lang-btn:hover { border-color: var(--latam); color: var(--text); }
+    .nav-cta {
+      background: var(--latam); color: #fff; border: none; border-radius: 8px;
+      padding: 7px 14px; font-size: 12px; font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: opacity .15s;
+    }
+    .nav-cta:hover { opacity: .85; }
+    .nav-back {
+      border: 1px solid var(--bd); border-radius: 8px; color: var(--muted);
+      padding: 7px 12px; font-size: 12px; transition: all .15s;
+    }
+    .nav-back:hover { border-color: var(--bd); color: var(--text); }
+
+    /* ── BANNER ──────────────────────────────────────────────────── */
+    .banner {
+      background: rgba(255,209,102,.07); border-bottom: 1px solid rgba(255,209,102,.18);
+      padding: 11px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .banner-left { display: flex; align-items: center; gap: 10px; }
+    .banner-dot  { width: 8px; height: 8px; border-radius: 50%; background: var(--emea); flex-shrink: 0; }
+    .banner-text { font-size: 12px; color: #e8d08a; line-height: 1.5; }
+    .banner-text strong { color: var(--emea); }
+    .banner-scale {
+      font-size: 11px; color: var(--muted);
+      background: rgba(255,255,255,.04); border: 1px solid var(--bd);
+      border-radius: 20px; padding: 4px 12px; white-space: nowrap;
+    }
+
+    /* ── LAYOUT ──────────────────────────────────────────────────── */
+    .page { max-width: 1200px; margin: 0 auto; padding: 48px 28px 80px; }
+
+    /* ── HERO STATS ──────────────────────────────────────────────── */
+    .hero { margin-bottom: 56px; }
+    .hero-label {
+      font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+      color: var(--muted); margin-bottom: 16px;
+    }
+    .hero-title {
+      font-size: clamp(22px, 3.5vw, 34px); font-weight: 800;
+      letter-spacing: -.5px; line-height: 1.15; margin-bottom: 8px;
+    }
+    .hero-title span { color: var(--latam); }
+    .hero-sub { font-size: 14px; color: var(--muted); max-width: 540px; margin-bottom: 36px; }
+    .stats-row {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+    }
+    .stat {
+      background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r);
+      padding: 18px 20px;
+    }
+    .stat-val {
+      font-size: 32px; font-weight: 800; letter-spacing: -.5px;
+      line-height: 1; margin-bottom: 4px;
+    }
+    .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+
+    /* ── SECTION CHROME ──────────────────────────────────────────── */
+    .section { margin-bottom: 64px; }
+    .section-hd {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 16px; margin-bottom: 24px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--bd);
+    }
+    .section-hd h2 { font-size: 16px; font-weight: 700; letter-spacing: -.2px; }
+    .section-hd p  { font-size: 12px; color: var(--muted); }
+
+    /* ── SCOPE SECTION ───────────────────────────────────────────── */
+    .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .scope-card {
+      background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r); padding: 22px 24px;
+    }
+    .scope-card h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 16px; }
+
+    .seniority-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .seniority-name { font-size: 13px; width: 90px; flex-shrink: 0; }
+    .seniority-bar-wrap { flex: 1; background: var(--sf2); border-radius: 4px; height: 8px; overflow: hidden; }
+    .seniority-bar { height: 100%; border-radius: 4px; background: var(--latam); }
+    .seniority-count { font-size: 12px; color: var(--muted); width: 48px; text-align: right; flex-shrink: 0; }
+
+    .partner-list { display: flex; flex-direction: column; gap: 10px; }
+    .partner-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .partner-info { display: flex; align-items: center; gap: 8px; }
+    .partner-avatar {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--latam); flex-shrink: 0;
+    }
+    .partner-name { font-size: 13px; }
+    .partner-region { font-size: 11px; color: var(--muted); }
+    .partner-sessions {
+      font-size: 12px; font-weight: 700; color: var(--text);
+      background: var(--sf2); border: 1px solid var(--bd);
+      border-radius: 20px; padding: 2px 10px; white-space: nowrap;
+    }
+
+    /* ── SESSIONS SECTION ────────────────────────────────────────── */
+    .region-block { margin-bottom: 40px; }
+    .region-hd {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    .region-badge {
+      font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 20px;
+    }
+    .region-badge.latam { background: rgba(108,99,255,.18); color: var(--latam); }
+    .region-badge.na    { background: rgba(0,201,167,.15);  color: var(--na);   }
+    .region-badge.emea  { background: rgba(255,209,102,.15); color: var(--emea); }
+    .region-badge.apac  { background: rgba(255,107,107,.15); color: var(--apac); }
+    .region-count { font-size: 12px; color: var(--muted); }
+
+    .sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .session-card {
+      background: var(--sf); border: 1px solid var(--bd);
+      border-radius: var(--r); overflow: hidden;
+      transition: border-color .15s, transform .15s;
+    }
+    .session-card:hover { border-color: rgba(255,255,255,.15); transform: translateY(-2px); }
+    .session-card-top { height: 3px; }
+    .session-card-top.latam { background: var(--latam); }
+    .session-card-top.na    { background: var(--na); }
+    .session-card-top.emea  { background: var(--emea); }
+    .session-card-top.apac  { background: var(--apac); }
+    .session-card-body { padding: 16px 18px; }
+
+    .session-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .session-id   { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+    .level-pill   {
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+      border: 1px solid var(--bd); color: var(--text); background: var(--sf2);
+    }
+    .level-pill.mixed { color: var(--emea); border-color: rgba(255,209,102,.3); background: rgba(255,209,102,.08); }
+
+    .session-roles { margin-bottom: 12px; }
+    .role-row { display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0; }
+    .role-key { color: var(--muted); }
+    .role-val { font-weight: 600; }
+
+    .session-counts { display: flex; gap: 8px; margin-bottom: 12px; }
+    .count-box {
+      background: var(--sf2); border: 1px solid var(--bd); border-radius: 8px;
+      padding: 8px 12px; flex: 1; text-align: center;
+    }
+    .count-num { font-size: 20px; font-weight: 800; line-height: 1; }
+    .count-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+
+    .session-managers { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+    .mgr-pill {
+      font-size: 10px; padding: 2px 8px; border-radius: 20px;
+      background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.2); color: #a8a4ff;
+    }
+    .mgr-pill.na   { background: rgba(0,201,167,.1);   border-color: rgba(0,201,167,.2);   color: #5de8cf; }
+    .mgr-pill.emea { background: rgba(255,209,102,.1); border-color: rgba(255,209,102,.2); color: #ffe08a; }
+    .mgr-pill.apac { background: rgba(255,107,107,.1); border-color: rgba(255,107,107,.2); color: #ff9696; }
+
+    .session-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag {
+      font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+      letter-spacing: .3px; text-transform: uppercase;
+    }
+    .tag-review    { background: rgba(255,107,107,.12); border: 1px solid rgba(255,107,107,.25); color: var(--apac); }
+    .tag-exception { background: rgba(255,209,102,.1);  border: 1px solid rgba(255,209,102,.25); color: var(--emea); }
+
+    .session-footer {
+      margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--bd);
+    }
+    .expand-btn {
+      background: none; border: 1px solid var(--bd); border-radius: 6px;
+      color: var(--muted); font-size: 11px; font-weight: 600;
+      padding: 5px 12px; cursor: pointer; width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: color .15s, border-color .15s;
+    }
+    .expand-btn:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
+    .expand-btn .arrow { font-size: 9px; transition: transform .2s; }
+    .expand-btn.open .arrow { transform: rotate(180deg); }
+
+    .session-detail {
+      display: none; margin-top: 12px;
+      border-top: 1px solid var(--bd); padding-top: 12px;
+    }
+    .session-detail.open { display: block; }
+    .detail-table { width: 100%; border-collapse: collapse; }
+    .detail-table th {
+      font-size: 9px; text-transform: uppercase; letter-spacing: .6px;
+      color: var(--muted); font-weight: 700; text-align: left;
+      padding: 4px 8px; border-bottom: 1px solid var(--bd);
+    }
+    .detail-table td {
+      font-size: 11px; padding: 5px 8px;
+      border-bottom: 1px solid rgba(46,51,71,.5); vertical-align: middle;
+    }
+    .detail-table tr:last-child td { border-bottom: none; }
+    .detail-table tr:hover td { background: rgba(255,255,255,.03); }
+    .person-is-mgr {
+      font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px;
+      background: rgba(255,107,107,.12); border: 1px solid rgba(255,107,107,.25);
+      color: var(--apac); text-transform: uppercase; letter-spacing: .3px;
+      white-space: nowrap;
+    }
+
+    /* ── LEGEND ──────────────────────────────────────────────────── */
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 16px;
+      margin-top: 20px; padding: 16px 20px;
+      background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r);
+    }
+    .legend-item { display: flex; align-items: flex-start; gap: 8px; }
+    .legend-tag  { flex-shrink: 0; margin-top: 1px; }
+    .legend-desc { font-size: 11px; color: var(--muted); line-height: 1.5; max-width: 260px; }
+
+    /* ── LOAD SECTION ────────────────────────────────────────────── */
+    .load-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .load-card {
+      background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r); padding: 22px 24px;
+    }
+    .load-card h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 18px; }
+
+    .load-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .load-name { font-size: 12px; width: 100px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .load-bar-wrap { flex: 1; background: var(--sf2); border-radius: 4px; height: 8px; overflow: hidden; }
+    .load-bar  { height: 100%; border-radius: 4px; }
+    .load-bar.latam { background: var(--latam); }
+    .load-bar.na    { background: var(--na); }
+    .load-bar.emea  { background: var(--emea); }
+    .load-bar.apac  { background: var(--apac); }
+    .load-val  { font-size: 12px; font-weight: 700; width: 32px; text-align: right; flex-shrink: 0; }
+
+    /* ── RULES CALLOUT ───────────────────────────────────────────── */
+    .rules-callout {
+      background: rgba(108,99,255,.06); border: 1px solid rgba(108,99,255,.18);
+      border-radius: var(--r); padding: 20px 24px; margin-top: 20px;
+    }
+    .rules-callout h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--latam); margin-bottom: 12px; }
+    .rules-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .rule-chip {
+      font-size: 11px; padding: 4px 12px; border-radius: 20px;
+      background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.2); color: #b8b4ff;
+    }
+
+    /* ── FOOTER CTA ──────────────────────────────────────────────── */
+    .footer-cta {
+      background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r);
+      padding: 36px 40px; text-align: center; margin-top: 64px;
+    }
+    .footer-cta h3 { font-size: 20px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 10px; }
+    .footer-cta p  { font-size: 13px; color: var(--muted); max-width: 480px; margin: 0 auto 24px; line-height: 1.7; }
+    .footer-cta a  {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--latam); color: #fff; border-radius: 8px;
+      padding: 10px 22px; font-size: 13px; font-weight: 600;
+      transition: opacity .15s;
+    }
+    .footer-cta a:hover { opacity: .85; }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────────── */
+    @media (max-width: 860px) {
+      .stats-row  { grid-template-columns: repeat(3, 1fr); }
+      .scope-grid { grid-template-columns: 1fr; }
+      .load-grid  { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 32px 16px 60px; }
+      .nav  { padding: 0 16px; }
+      .banner { padding: 10px 16px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .nav-cta { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-title">Calibration Session Planner</span>
+  <div class="nav-right">
+    <button class="lang-btn"        id="btn-pt" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+    <a class="nav-cta" href="https://www.linkedin.com/in/gilbernon" target="_blank" rel="noopener">
+      <span data-key="cta_nav"></span>
+    </a>
+    <a class="nav-back" href="index-en.html" data-key="back"></a>
+  </div>
+</nav>
+
+<div class="banner">
+  <div class="banner-left">
+    <div class="banner-dot"></div>
+    <p class="banner-text" data-key="banner_main"></p>
+  </div>
+  <span class="banner-scale" data-key="banner_scale"></span>
+</div>
+
+<div class="page">
+
+  <!-- ── HERO ─────────────────────────────────────────────────────── -->
+  <div class="hero">
+    <p class="hero-label" data-key="hero_label"></p>
+    <h1 class="hero-title" data-key="hero_title"></h1>
+    <p class="hero-sub"   data-key="hero_sub"></p>
+    <div class="stats-row" id="stats-row"></div>
+  </div>
+
+  <!-- ── SCOPE ─────────────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-hd">
+      <h2 data-key="scope_title"></h2>
+      <p  data-key="scope_sub"></p>
+    </div>
+    <div class="scope-grid">
+      <div class="scope-card">
+        <h3 data-key="scope_seniority"></h3>
+        <div id="seniority-bars"></div>
+      </div>
+      <div class="scope-card">
+        <h3 data-key="scope_partners"></h3>
+        <div class="partner-list" id="partner-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SESSIONS ───────────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-hd">
+      <h2 data-key="sessions_title"></h2>
+      <p  data-key="sessions_sub"></p>
+    </div>
+    <div id="sessions-container"></div>
+
+    <div id="legend-container"></div>
+
+    <div class="rules-callout">
+      <h4 data-key="rules_title"></h4>
+      <div class="rules-list" id="rules-list"></div>
+    </div>
+  </div>
+
+  <!-- ── LOAD ──────────────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-hd">
+      <h2 data-key="load_title"></h2>
+      <p  data-key="load_sub"></p>
+    </div>
+    <div class="load-grid">
+      <div class="load-card">
+        <h3 data-key="load_partner_title"></h3>
+        <div id="partner-load"></div>
+      </div>
+      <div class="load-card">
+        <h3 data-key="load_manager_title"></h3>
+        <div id="manager-load"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER CTA ─────────────────────────────────────────────────── -->
+  <div class="footer-cta">
+    <h3 data-key="footer_title"></h3>
+    <p  data-key="footer_sub"></p>
+    <a href="https://www.linkedin.com/in/gilbernon" target="_blank" rel="noopener" data-key="footer_cta"></a>
+  </div>
+
+</div>
+
+<script>
+const LANG = {
+  pt: {
+    cta_nav:           'Esse problema é familiar? →',
+    back:              '← Portfolio',
+    banner_main:       '<strong>Cenário demo:</strong> Empresa global de tecnologia · LATAM + NA + EMEA + APAC · Q3 Performance Review · Developers',
+    banner_scale:      'Replicável com mais países, clientes e variáveis',
+    hero_label:        'Demo · Dados fictícios · Calibration Session Planner',
+    hero_title:        'Engine de planejamento de<br><span>sessões de calibração global</span>',
+    hero_sub:          'A partir de dados organizacionais e regras configuráveis, o engine calcula automaticamente a estrutura completa de sessões, atribui pessoas e projeta toda a operação antes de ela acontecer.',
+    scope_title:       'Pessoas em escopo',
+    scope_sub:         'Distribuição por senioridade e parceiros de RH envolvidos',
+    scope_seniority:   'Senioridade',
+    scope_partners:    'Parceiros de RH',
+    sessions_title:    'Sessões de calibração',
+    sessions_sub:      'Estrutura calculada pelo engine — cada sala respeitando os limites configurados',
+    rules_title:       'Regras respeitadas pelo engine',
+    load_title:        'Análise de carga',
+    load_sub:          'Distribuição de sessões por parceiro de RH e por gestor',
+    load_partner_title:'Parceiro de RH — sessões no round de PR',
+    load_manager_title:'Gestor — sessões que participa',
+    footer_title:      'Esse cenário é familiar?',
+    footer_sub:        'Este é um caso demonstrativo. A complexidade real vai muito além — mais regiões, mais clientes, mais variáveis, mais restrições. É disso que eu quero falar.',
+    footer_cta:           'Vamos conversar →',
+    label_partner:        'Parceiro de RH',
+    label_calibrator:     'Calibrator',
+    label_managers:       'Gestores',
+    label_people:         'Pessoas',
+    tag_review:           'Gestor avaliado',
+    tag_exception:        'Agrupamento exceção',
+    btn_expand:           'Ver colaboradores',
+    btn_collapse:         'Fechar',
+    detail_col_name:      'Nome',
+    detail_col_level:     'Nível',
+    detail_col_manager:   'Gestor direto',
+    legend_review_desc:   'O gestor desta sessão também está sendo avaliado neste ciclo — ele aparece como colaborador em outra sessão da mesma região.',
+    legend_exception_desc:'Sessão gerada por agrupamento de exceção: o número de gestores ou colaboradores ficou abaixo do mínimo configurado e o engine consolidou grupos para garantir viabilidade operacional.',
+    rules: [
+      'Gestores separados de seus liderados',
+      'Mín. 3 gestores por sessão',
+      'Mín. 10 pessoas por sessão',
+      'Mesmo nível de senioridade por sessão',
+      'Calibrator da mesma região',
+      'Equilíbrio de carga por parceiro de RH',
+      'Agrupamento de exceção quando abaixo do mínimo',
+    ],
+    regions: { LATAM: 'LATAM', 'North America': 'América do Norte', EMEA: 'EMEA', APAC: 'APAC' },
+    stats: [
+      { val: '4',  lbl: 'Regiões'         },
+      { val: '15', lbl: 'Gestores'         },
+      { val: '172',lbl: 'Pessoas em escopo'},
+      { val: '17', lbl: 'Sessões calculadas'},
+      { val: '7',  lbl: 'Parceiros de RH'  },
+    ],
+    seniority: [
+      { name: 'Junior',     count: 22,  pct: 13 },
+      { name: 'Mid-Level',  count: 50,  pct: 29 },
+      { name: 'Senior',     count: 68,  pct: 40 },
+      { name: 'Master',     count: 32,  pct: 18 },
+    ],
+  },
+  en: {
+    cta_nav:           'Does this resonate? →',
+    back:              '← Portfolio',
+    banner_main:       '<strong>Demo scenario:</strong> Global tech company · LATAM + NA + EMEA + APAC · Q3 Performance Review · Developers',
+    banner_scale:      'Replicable with more countries, clients, and variables',
+    hero_label:        'Demo · Fictional data · Calibration Session Planner',
+    hero_title:        'Planning engine for<br><span>global calibration sessions</span>',
+    hero_sub:          'From organizational data and configurable rules, the engine automatically computes the full session structure, assigns people, and projects the entire operation before it happens.',
+    scope_title:       'People in scope',
+    scope_sub:         'Breakdown by seniority level and HR Partners involved',
+    scope_seniority:   'Seniority',
+    scope_partners:    'HR Partners',
+    sessions_title:    'Calibration sessions',
+    sessions_sub:      'Structure computed by the engine — each room respecting configured constraints',
+    rules_title:       'Rules enforced by the engine',
+    load_title:        'Load analysis',
+    load_sub:          'Session distribution per HR Partner and per Manager',
+    load_partner_title:'HR Partner — sessions in PR round',
+    load_manager_title:'Manager — sessions attended',
+    footer_title:      'Does this problem look familiar?',
+    footer_sub:        'This is a demonstrative scenario. Real complexity goes far beyond this — more regions, more clients, more variables, more constraints. That\'s exactly what I want to talk about.',
+    footer_cta:           'Let\'s connect →',
+    label_partner:        'HR Partner',
+    label_calibrator:     'Calibrator',
+    label_managers:       'Managers',
+    label_people:         'People',
+    tag_review:           'Manager under review',
+    tag_exception:        'Exception merge',
+    btn_expand:           'View people',
+    btn_collapse:         'Close',
+    detail_col_name:      'Name',
+    detail_col_level:     'Level',
+    detail_col_manager:   'Direct manager',
+    legend_review_desc:   'The manager of this session is also being evaluated in this cycle — they appear as a contributor in another session within the same region.',
+    legend_exception_desc:'Session created by exception merge: the number of managers or contributors fell below the configured minimum, so the engine consolidated groups to ensure operational viability.',
+    rules: [
+      'Managers separated from their direct reports',
+      'Min 3 managers per session',
+      'Min 10 people per session',
+      'Same seniority level per session',
+      'Calibrator from the same region',
+      'Load balancing per HR Partner',
+      'Exception merge when below minimum',
+    ],
+    regions: { LATAM: 'LATAM', 'North America': 'North America', EMEA: 'EMEA', APAC: 'APAC' },
+    stats: [
+      { val: '4',  lbl: 'Regions'          },
+      { val: '15', lbl: 'Managers'          },
+      { val: '172',lbl: 'People in scope'   },
+      { val: '17', lbl: 'Sessions computed' },
+      { val: '7',  lbl: 'HR Partners'       },
+    ],
+    seniority: [
+      { name: 'Junior',     count: 22,  pct: 13 },
+      { name: 'Mid-Level',  count: 50,  pct: 29 },
+      { name: 'Senior',     count: 68,  pct: 40 },
+      { name: 'Master',     count: 32,  pct: 18 },
+    ],
+  },
+};
+
+const DATA = {
+  partners: [
+    { name: 'M. Silva',       region: 'LATAM',         sessions: 2, cls: 'latam' },
+    { name: 'R. Lima',        region: 'LATAM',         sessions: 2, cls: 'latam' },
+    { name: 'C. Souza',       region: 'LATAM',         sessions: 2, cls: 'latam' },
+    { name: 'S. Jones',       region: 'North America', sessions: 3, cls: 'na'    },
+    { name: 'J. Miller',      region: 'North America', sessions: 2, cls: 'na'    },
+    { name: 'T. Weber',       region: 'EMEA',          sessions: 2, cls: 'emea'  },
+    { name: 'E. Kovac',       region: 'EMEA',          sessions: 2, cls: 'emea'  },
+    { name: 'Y. Tanaka',      region: 'APAC',          sessions: 3, cls: 'apac'  },
+  ],
+  sessions: [
+    { region:'LATAM', cls:'latam', n:1, level:'Senior', partner:'M. Silva', calibrator:'Dir. LATAM', people:11, managers:['A. Santos','B. Costa','C. Lima'], tags:[],
+      contributors:[
+        {name:'Carla Mendes',    level:'Senior',   manager:'A. Santos'},
+        {name:'Diego Alves',     level:'Senior',   manager:'A. Santos'},
+        {name:'Elena Rocha',     level:'Senior',   manager:'A. Santos'},
+        {name:'Felipe Torres',   level:'Senior',   manager:'A. Santos'},
+        {name:'Gabi Nunes',      level:'Senior',   manager:'B. Costa'},
+        {name:'Hugo Barros',     level:'Senior',   manager:'B. Costa'},
+        {name:'Isabela Cruz',    level:'Senior',   manager:'B. Costa'},
+        {name:'João Melo',       level:'Senior',   manager:'C. Lima'},
+        {name:'Karla Dias',      level:'Senior',   manager:'C. Lima'},
+        {name:'Lucas Pinto',     level:'Senior',   manager:'C. Lima'},
+        {name:'Mariana Faria',   level:'Senior',   manager:'C. Lima'},
+      ]},
+    { region:'LATAM', cls:'latam', n:2, level:'Mid-Level', partner:'M. Silva', calibrator:'Dir. LATAM', people:10, managers:['A. Santos','B. Costa','C. Lima'], tags:[],
+      contributors:[
+        {name:'Nicolas Ramos',   level:'Mid-Level', manager:'A. Santos'},
+        {name:'Olivia Cardoso',  level:'Mid-Level', manager:'A. Santos'},
+        {name:'Pedro Vieira',    level:'Mid-Level', manager:'A. Santos'},
+        {name:'Rafael Lopes',    level:'Mid-Level', manager:'B. Costa'},
+        {name:'Sofia Queiroz',   level:'Mid-Level', manager:'B. Costa'},
+        {name:'Thiago Medeiros', level:'Mid-Level', manager:'B. Costa'},
+        {name:'Victor Reis',     level:'Mid-Level', manager:'C. Lima'},
+        {name:'Alice Braga',     level:'Mid-Level', manager:'C. Lima'},
+        {name:'Ben Ferraz',      level:'Mid-Level', manager:'C. Lima'},
+        {name:'Clara Moura',     level:'Mid-Level', manager:'C. Lima'},
+      ]},
+    { region:'LATAM', cls:'latam', n:3, level:'Senior', partner:'R. Lima', calibrator:'Dir. LATAM', people:11, managers:['D. Rodrigues','E. Ferreira'], tags:[],
+      contributors:[
+        {name:'David Cunha',     level:'Senior', manager:'D. Rodrigues'},
+        {name:'Eva Monteiro',    level:'Senior', manager:'D. Rodrigues'},
+        {name:'Frank Souza',     level:'Senior', manager:'D. Rodrigues'},
+        {name:'Grace Teixeira',  level:'Senior', manager:'D. Rodrigues'},
+        {name:'Henry Azevedo',   level:'Senior', manager:'D. Rodrigues'},
+        {name:'Iris Cavalcante', level:'Senior', manager:'E. Ferreira'},
+        {name:'Jake Nascimento',  level:'Senior', manager:'E. Ferreira'},
+        {name:'Kate Ribeiro',    level:'Senior', manager:'E. Ferreira'},
+        {name:'Leo Carvalho',    level:'Senior', manager:'E. Ferreira'},
+        {name:'Mia Gonçalves',   level:'Senior', manager:'E. Ferreira'},
+        {name:'Nathan Lima',     level:'Senior', manager:'E. Ferreira'},
+      ]},
+    { region:'LATAM', cls:'latam', n:4, level:'Mid-Level', partner:'R. Lima', calibrator:'Dir. LATAM', people:10, managers:['D. Rodrigues','E. Ferreira'], tags:[],
+      contributors:[
+        {name:'Nora Campos',     level:'Mid-Level', manager:'D. Rodrigues'},
+        {name:'Paula Duarte',    level:'Mid-Level', manager:'D. Rodrigues'},
+        {name:'Ryan Saraiva',    level:'Mid-Level', manager:'D. Rodrigues'},
+        {name:'Sara Freitas',    level:'Mid-Level', manager:'D. Rodrigues'},
+        {name:'Tom Gomes',       level:'Mid-Level', manager:'D. Rodrigues'},
+        {name:'Vera Machado',    level:'Mid-Level', manager:'E. Ferreira'},
+        {name:'Will Pinheiro',   level:'Mid-Level', manager:'E. Ferreira'},
+        {name:'Yasmin Correia',  level:'Mid-Level', manager:'E. Ferreira'},
+        {name:'Yuri Nogueira',   level:'Mid-Level', manager:'E. Ferreira'},
+        {name:'Zoe Marques',     level:'Mid-Level', manager:'E. Ferreira'},
+      ]},
+    { region:'LATAM', cls:'latam', n:5, level:'Master', partner:'C. Souza', calibrator:'Dir. LATAM', people:12, managers:['D. Rodrigues','E. Ferreira','A. Santos'], tags:['review'],
+      contributors:[
+        {name:'E. Ferreira',     level:'Master', manager:'Dir. LATAM', isMgr:true},
+        {name:'Adrian Costa',    level:'Master', manager:'D. Rodrigues'},
+        {name:'Beatriz Vaz',     level:'Master', manager:'D. Rodrigues'},
+        {name:'Cassio Andrade',  level:'Master', manager:'D. Rodrigues'},
+        {name:'Emil Rocha',      level:'Master', manager:'D. Rodrigues'},
+        {name:'Fatima Borges',   level:'Master', manager:'E. Ferreira'},
+        {name:'Gustavo Mota',    level:'Master', manager:'E. Ferreira'},
+        {name:'Heitor Vilas',    level:'Master', manager:'E. Ferreira'},
+        {name:'Ingrid Paiva',    level:'Master', manager:'A. Santos'},
+        {name:'Jonas Branco',    level:'Master', manager:'A. Santos'},
+        {name:'Larissa Fonseca', level:'Master', manager:'A. Santos'},
+        {name:'Marcio Brito',    level:'Master', manager:'A. Santos'},
+      ]},
+    { region:'LATAM', cls:'latam', n:6, level:'Senior', partner:'C. Souza', calibrator:'Dir. LATAM', people:8, managers:['B. Costa','C. Lima'], tags:['exception'],
+      contributors:[
+        {name:'Natalia Leite',   level:'Senior', manager:'B. Costa'},
+        {name:'Omar Silva',      level:'Senior', manager:'B. Costa'},
+        {name:'Patricia Neto',   level:'Senior', manager:'B. Costa'},
+        {name:'Quintino Ruas',   level:'Senior', manager:'B. Costa'},
+        {name:'Renata Assis',    level:'Senior', manager:'C. Lima'},
+        {name:'Sergio Luz',      level:'Senior', manager:'C. Lima'},
+        {name:'Tatiana Melo',    level:'Senior', manager:'C. Lima'},
+        {name:'Ulisses Faria',   level:'Senior', manager:'C. Lima'},
+      ]},
+    { region:'North America', cls:'na', n:1, level:'Senior', partner:'S. Jones', calibrator:'Dir. NA', people:10, managers:['G. Silva','H. Barbosa','I. Johnson'], tags:[],
+      contributors:[
+        {name:'Amy Carter',      level:'Senior', manager:'G. Silva'},
+        {name:'Brian Hall',      level:'Senior', manager:'G. Silva'},
+        {name:'Cynthia Torres',  level:'Senior', manager:'G. Silva'},
+        {name:'Daniel Wright',   level:'Senior', manager:'H. Barbosa'},
+        {name:'Emily Scott',     level:'Senior', manager:'H. Barbosa'},
+        {name:'Frank Green',     level:'Senior', manager:'H. Barbosa'},
+        {name:'Gloria Adams',    level:'Senior', manager:'I. Johnson'},
+        {name:'Harold Baker',    level:'Senior', manager:'I. Johnson'},
+        {name:'Irene Nelson',    level:'Senior', manager:'I. Johnson'},
+        {name:'James Clark',     level:'Senior', manager:'I. Johnson'},
+      ]},
+    { region:'North America', cls:'na', n:2, level:'Mid-Level', partner:'S. Jones', calibrator:'Dir. NA', people:10, managers:['G. Silva','H. Barbosa','I. Johnson'], tags:[],
+      contributors:[
+        {name:'Karen Young',     level:'Mid-Level', manager:'G. Silva'},
+        {name:'Leo Allen',       level:'Mid-Level', manager:'G. Silva'},
+        {name:'Monica King',     level:'Mid-Level', manager:'G. Silva'},
+        {name:'Nathan Wright',   level:'Mid-Level', manager:'H. Barbosa'},
+        {name:'Olivia Scott',    level:'Mid-Level', manager:'H. Barbosa'},
+        {name:'Peter Harris',    level:'Mid-Level', manager:'H. Barbosa'},
+        {name:'Quinn Lewis',     level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Rachel Walker',   level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Samuel Hall',     level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Tina Robinson',   level:'Mid-Level', manager:'I. Johnson'},
+      ]},
+    { region:'North America', cls:'na', n:3, level:'Senior', partner:'J. Miller', calibrator:'Dir. NA', people:10, managers:['G. Silva','H. Barbosa'], tags:['review'],
+      contributors:[
+        {name:'H. Barbosa',      level:'Senior', manager:'Dir. NA', isMgr:true},
+        {name:'Uma Thompson',    level:'Senior', manager:'G. Silva'},
+        {name:'Victor Evans',    level:'Senior', manager:'G. Silva'},
+        {name:'Wendy Turner',    level:'Senior', manager:'G. Silva'},
+        {name:'Xavier Phillips', level:'Senior', manager:'G. Silva'},
+        {name:'Yvonne Campbell', level:'Senior', manager:'G. Silva'},
+        {name:'Zachary Parker',  level:'Senior', manager:'H. Barbosa'},
+        {name:'Alice Edwards',   level:'Senior', manager:'H. Barbosa'},
+        {name:'Blake Collins',   level:'Senior', manager:'H. Barbosa'},
+        {name:'Carla Stewart',   level:'Senior', manager:'H. Barbosa'},
+      ]},
+    { region:'North America', cls:'na', n:4, level:'Mid-Level', partner:'J. Miller', calibrator:'Dir. NA', people:10, managers:['I. Johnson'], tags:[],
+      contributors:[
+        {name:'Derek Morris',    level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Ella Rogers',     level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Finn Reed',       level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Gina Cook',       level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Harry Morgan',    level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Isla Bell',       level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Jack Murphy',     level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Kylie Bailey',    level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Liam Rivera',     level:'Mid-Level', manager:'I. Johnson'},
+        {name:'Maya Cooper',     level:'Mid-Level', manager:'I. Johnson'},
+      ]},
+    { region:'North America', cls:'na', n:5, level:'Master', partner:'S. Jones', calibrator:'Dir. NA', people:8, managers:['H. Barbosa','I. Johnson'], tags:['exception','review'],
+      contributors:[
+        {name:'H. Barbosa',      level:'Master', manager:'Dir. NA', isMgr:true},
+        {name:'Noah Richardson', level:'Master', manager:'H. Barbosa'},
+        {name:'Olivia Cox',      level:'Master', manager:'H. Barbosa'},
+        {name:'Parker Howard',   level:'Master', manager:'I. Johnson'},
+        {name:'Quinn Ward',      level:'Master', manager:'I. Johnson'},
+        {name:'Rose Torres',     level:'Master', manager:'I. Johnson'},
+        {name:'Sean Peterson',   level:'Master', manager:'I. Johnson'},
+        {name:'Tara Gray',       level:'Master', manager:'I. Johnson'},
+      ]},
+    { region:'EMEA', cls:'emea', n:1, level:'Senior', partner:'T. Weber', calibrator:'Dir. EMEA', people:10, managers:['K. Martins','L. Wilson'], tags:[],
+      contributors:[
+        {name:'Anja Müller',     level:'Senior', manager:'K. Martins'},
+        {name:'Boris Fischer',   level:'Senior', manager:'K. Martins'},
+        {name:'Clara Schmidt',   level:'Senior', manager:'K. Martins'},
+        {name:'Dimitri Popov',   level:'Senior', manager:'K. Martins'},
+        {name:'Elena Kovac',     level:'Senior', manager:'K. Martins'},
+        {name:'Franz Weber',     level:'Senior', manager:'L. Wilson'},
+        {name:'Greta Bauer',     level:'Senior', manager:'L. Wilson'},
+        {name:'Hans Richter',    level:'Senior', manager:'L. Wilson'},
+        {name:'Ingrid Novak',    level:'Senior', manager:'L. Wilson'},
+        {name:'Jakub Horak',     level:'Senior', manager:'L. Wilson'},
+      ]},
+    { region:'EMEA', cls:'emea', n:2, level:'Mid-Level', partner:'E. Kovac', calibrator:'Dir. EMEA', people:10, managers:['K. Martins','L. Wilson'], tags:['review'],
+      contributors:[
+        {name:'L. Wilson',       level:'Mid-Level', manager:'Dir. EMEA', isMgr:true},
+        {name:'Katja Schulz',    level:'Mid-Level', manager:'K. Martins'},
+        {name:'Lena Hoffmann',   level:'Mid-Level', manager:'K. Martins'},
+        {name:'Mikael Svensson', level:'Mid-Level', manager:'K. Martins'},
+        {name:'Nina Larsson',    level:'Mid-Level', manager:'K. Martins'},
+        {name:'Olaf Jensen',     level:'Mid-Level', manager:'L. Wilson'},
+        {name:'Petra Daniels',   level:'Mid-Level', manager:'L. Wilson'},
+        {name:'Rolf Andersen',   level:'Mid-Level', manager:'L. Wilson'},
+        {name:'Sofia Eriksson',  level:'Mid-Level', manager:'L. Wilson'},
+        {name:'Tobias Berg',     level:'Mid-Level', manager:'L. Wilson'},
+      ]},
+    { region:'EMEA', cls:'emea', n:3, level:'Senior', partner:'E. Kovac', calibrator:'Dir. EMEA', people:6, managers:['K. Martins'], tags:['exception'],
+      contributors:[
+        {name:'Ursula Krans',    level:'Senior', manager:'K. Martins'},
+        {name:'Viktor Blom',     level:'Senior', manager:'K. Martins'},
+        {name:'Wilma Strand',    level:'Senior', manager:'K. Martins'},
+        {name:'Xander Holm',     level:'Senior', manager:'K. Martins'},
+        {name:'Ylva Lindqvist',  level:'Senior', manager:'K. Martins'},
+        {name:'Zara Magnusson',  level:'Senior', manager:'K. Martins'},
+      ]},
+    { region:'APAC', cls:'apac', n:1, level:'Senior', partner:'Y. Tanaka', calibrator:'Dir. APAC', people:15, managers:['N. Nascimento','O. Taylor'], tags:['review'],
+      contributors:[
+        {name:'O. Taylor',       level:'Senior', manager:'Dir. APAC', isMgr:true},
+        {name:'Aiko Suzuki',     level:'Senior', manager:'N. Nascimento'},
+        {name:'Bowen Zhang',     level:'Senior', manager:'N. Nascimento'},
+        {name:'Chen Wei',        level:'Senior', manager:'N. Nascimento'},
+        {name:'Daiki Yamamoto',  level:'Senior', manager:'N. Nascimento'},
+        {name:'Emi Nakamura',    level:'Senior', manager:'N. Nascimento'},
+        {name:'Feng Liu',        level:'Senior', manager:'N. Nascimento'},
+        {name:'Guo Jing',        level:'Senior', manager:'O. Taylor'},
+        {name:'Hana Kim',        level:'Senior', manager:'O. Taylor'},
+        {name:'Ivan Zhao',       level:'Senior', manager:'O. Taylor'},
+        {name:'Ji-Young Park',   level:'Senior', manager:'O. Taylor'},
+        {name:'Kenji Ito',       level:'Senior', manager:'O. Taylor'},
+        {name:'Liang Chen',      level:'Senior', manager:'O. Taylor'},
+        {name:'Mei Lin',         level:'Senior', manager:'O. Taylor'},
+        {name:'Nao Watanabe',    level:'Senior', manager:'O. Taylor'},
+      ]},
+    { region:'APAC', cls:'apac', n:2, level:'Mid-Level', partner:'Y. Tanaka', calibrator:'Dir. APAC', people:15, managers:['N. Nascimento','O. Taylor'], tags:[],
+      contributors:[
+        {name:'Osamu Hayashi',   level:'Mid-Level', manager:'N. Nascimento'},
+        {name:'Ping Wu',         level:'Mid-Level', manager:'N. Nascimento'},
+        {name:'Qing Li',         level:'Mid-Level', manager:'N. Nascimento'},
+        {name:'Ren Tanaka',      level:'Mid-Level', manager:'N. Nascimento'},
+        {name:'Shu Wang',        level:'Mid-Level', manager:'N. Nascimento'},
+        {name:'Tao Yang',        level:'Mid-Level', manager:'N. Nascimento'},
+        {name:'Ui-Jun Lee',      level:'Mid-Level', manager:'N. Nascimento'},
+        {name:'Violet Nguyen',   level:'Mid-Level', manager:'O. Taylor'},
+        {name:'Wei Chen',        level:'Mid-Level', manager:'O. Taylor'},
+        {name:'Xiu Zhang',       level:'Mid-Level', manager:'O. Taylor'},
+        {name:'Yong Kim',        level:'Mid-Level', manager:'O. Taylor'},
+        {name:'Zhen Liu',        level:'Mid-Level', manager:'O. Taylor'},
+        {name:'An Pham',         level:'Mid-Level', manager:'O. Taylor'},
+        {name:'Bao Tran',        level:'Mid-Level', manager:'O. Taylor'},
+        {name:'Cam Ho',          level:'Mid-Level', manager:'O. Taylor'},
+      ]},
+    { region:'APAC', cls:'apac', n:3, level:'Master', partner:'Y. Tanaka', calibrator:'Dir. APAC', people:6, managers:['N. Nascimento','O. Taylor'], tags:['exception'],
+      contributors:[
+        {name:'Dao Nguyen',      level:'Master', manager:'N. Nascimento'},
+        {name:'Eun-Ji Choi',     level:'Master', manager:'N. Nascimento'},
+        {name:'Fumi Kobayashi',  level:'Master', manager:'N. Nascimento'},
+        {name:'Gang Zhou',       level:'Master', manager:'O. Taylor'},
+        {name:'Hae-Won Oh',      level:'Master', manager:'O. Taylor'},
+        {name:'Iku Matsuda',     level:'Master', manager:'O. Taylor'},
+      ]},
+  ].filter(s => s.people > 0),
+  managerLoad: [
+    { name: 'A. Santos',     cls: 'latam', sessions: 3 },
+    { name: 'B. Costa',      cls: 'latam', sessions: 3 },
+    { name: 'C. Lima',       cls: 'latam', sessions: 3 },
+    { name: 'D. Rodrigues',  cls: 'latam', sessions: 3 },
+    { name: 'E. Ferreira',   cls: 'latam', sessions: 3 },
+    { name: 'G. Silva',      cls: 'na',    sessions: 3 },
+    { name: 'H. Barbosa',    cls: 'na',    sessions: 3 },
+    { name: 'I. Johnson',    cls: 'na',    sessions: 3 },
+    { name: 'K. Martins',    cls: 'emea',  sessions: 3 },
+    { name: 'L. Wilson',     cls: 'emea',  sessions: 2 },
+    { name: 'N. Nascimento', cls: 'apac',  sessions: 3 },
+    { name: 'O. Taylor',     cls: 'apac',  sessions: 3 },
+  ],
+};
+
+const REGION_ORDER = ['LATAM', 'North America', 'EMEA', 'APAC'];
+const REGION_CLS   = { LATAM: 'latam', 'North America': 'na', EMEA: 'emea', APAC: 'apac' };
+
+let currentLang = 'en';
+
+function t(key) { return LANG[currentLang][key] || key; }
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderAll(lang) {
+  currentLang = lang;
+  const L = LANG[lang];
+
+  document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+  document.getElementById('btn-pt').classList.toggle('active', lang === 'pt');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const key = el.dataset.key;
+    if (L[key] !== undefined) el.innerHTML = L[key];
+  });
+
+  renderStats(L);
+  renderSeniority(L);
+  renderPartners(L);
+  renderSessions(L);
+  renderRules(L);
+  renderLoad(L);
+}
+
+function renderStats(L) {
+  document.getElementById('stats-row').innerHTML = L.stats.map(s =>
+    `<div class="stat">
+      <div class="stat-val">${s.val}</div>
+      <div class="stat-lbl">${escHtml(s.lbl)}</div>
+    </div>`
+  ).join('');
+}
+
+function renderSeniority(L) {
+  const max = Math.max(...L.seniority.map(s => s.count));
+  document.getElementById('seniority-bars').innerHTML = L.seniority.map(s =>
+    `<div class="seniority-row">
+      <span class="seniority-name">${escHtml(s.name)}</span>
+      <div class="seniority-bar-wrap">
+        <div class="seniority-bar" style="width:${Math.round(s.count/max*100)}%"></div>
+      </div>
+      <span class="seniority-count">${s.count}</span>
+    </div>`
+  ).join('');
+}
+
+function renderPartners(L) {
+  const regLabel = r => (L.regions && L.regions[r]) ? L.regions[r] : r;
+  document.getElementById('partner-list').innerHTML = DATA.partners.map(p =>
+    `<div class="partner-row">
+      <div class="partner-info">
+        <div class="partner-avatar">${escHtml(p.name[0])}</div>
+        <div>
+          <div class="partner-name">${escHtml(p.name)}</div>
+          <div class="partner-region">${escHtml(regLabel(p.region))}</div>
+        </div>
+      </div>
+      <span class="partner-sessions">${p.sessions} ${p.sessions === 1 ? 'session' : (currentLang === 'pt' ? 'sessões' : 'sessions')}</span>
+    </div>`
+  ).join('');
+}
+
+function renderSessions(L) {
+  const regLabel = r => (L.regions && L.regions[r]) ? L.regions[r] : r;
+  const grouped  = {};
+  REGION_ORDER.forEach(r => { grouped[r] = []; });
+  DATA.sessions.forEach(s => { if (grouped[s.region]) grouped[s.region].push(s); });
+
+  let html = '';
+  REGION_ORDER.forEach(region => {
+    const sessions = grouped[region];
+    if (!sessions.length) return;
+    const cls = REGION_CLS[region];
+    html += `<div class="region-block">
+      <div class="region-hd">
+        <span class="region-badge ${cls}">${escHtml(regLabel(region))}</span>
+        <span class="region-count">${sessions.length} ${currentLang === 'pt' ? 'sessões' : 'sessions'}</span>
+      </div>
+      <div class="sessions-grid">
+        ${sessions.map(s => renderSessionCard(s, L, cls)).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('sessions-container').innerHTML = html;
+  renderLegend(L);
+}
+
+function renderSessionCard(s, L, cls) {
+  const levelClass  = s.level.includes('·') ? 'mixed' : '';
+  const cardId      = `detail-${s.region.replace(/\s/g,'-')}-${s.n}`;
+  const btnId       = `btn-${cardId}`;
+
+  const mgrPills = s.managers.map(m =>
+    `<span class="mgr-pill ${cls}">${escHtml(m)}</span>`
+  ).join('');
+
+  const tagPills = s.tags.map(tag => {
+    if (tag === 'review')    return `<span class="tag tag-review">${L.tag_review}</span>`;
+    if (tag === 'exception') return `<span class="tag tag-exception">${L.tag_exception}</span>`;
+    return '';
+  }).join('');
+
+  const detailRows = (s.contributors || []).map(c =>
+    `<tr>
+      <td>${escHtml(c.name)}${c.isMgr ? ` <span class="person-is-mgr">${L.tag_review}</span>` : ''}</td>
+      <td>${escHtml(c.level)}</td>
+      <td>${escHtml(c.manager)}</td>
+    </tr>`
+  ).join('');
+
+  return `<div class="session-card">
+    <div class="session-card-top ${cls}"></div>
+    <div class="session-card-body">
+      <div class="session-row1">
+        <span class="session-id">#${s.n}</span>
+        <span class="level-pill ${levelClass}">${escHtml(s.level)}</span>
+      </div>
+      <div class="session-roles">
+        <div class="role-row"><span class="role-key">${L.label_partner}</span><span class="role-val">${escHtml(s.partner)}</span></div>
+        <div class="role-row"><span class="role-key">${L.label_calibrator}</span><span class="role-val">${escHtml(s.calibrator)}</span></div>
+      </div>
+      <div class="session-counts">
+        <div class="count-box">
+          <div class="count-num">${s.managers.length}</div>
+          <div class="count-lbl">${L.label_managers}</div>
+        </div>
+        <div class="count-box">
+          <div class="count-num">${s.people}</div>
+          <div class="count-lbl">${L.label_people}</div>
+        </div>
+      </div>
+      ${mgrPills ? `<div class="session-managers">${mgrPills}</div>` : ''}
+      ${tagPills ? `<div class="session-tags">${tagPills}</div>` : ''}
+      <div class="session-footer">
+        <button class="expand-btn" id="${btnId}" onclick="toggleDetail('${cardId}','${btnId}')">
+          <span class="btn-label">${L.btn_expand}</span>
+          <span class="arrow">▼</span>
+        </button>
+      </div>
+      <div class="session-detail" id="${cardId}">
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>${L.detail_col_name}</th>
+              <th>${L.detail_col_level}</th>
+              <th>${L.detail_col_manager}</th>
+            </tr>
+          </thead>
+          <tbody>${detailRows}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleDetail(cardId, btnId) {
+  const detail = document.getElementById(cardId);
+  const btn    = document.getElementById(btnId);
+  const L      = LANG[currentLang];
+  const isOpen = detail.classList.contains('open');
+  detail.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  btn.querySelector('.btn-label').textContent = isOpen ? L.btn_expand : L.btn_collapse;
+}
+
+function renderLegend(L) {
+  document.getElementById('legend-container').innerHTML =
+    `<div class="legend">
+      <div class="legend-item">
+        <span class="legend-tag"><span class="tag tag-review">${L.tag_review}</span></span>
+        <span class="legend-desc">${escHtml(L.legend_review_desc)}</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-tag"><span class="tag tag-exception">${L.tag_exception}</span></span>
+        <span class="legend-desc">${escHtml(L.legend_exception_desc)}</span>
+      </div>
+    </div>`;
+}
+
+function renderRules(L) {
+  document.getElementById('rules-list').innerHTML = L.rules.map(r =>
+    `<span class="rule-chip">${escHtml(r)}</span>`
+  ).join('');
+}
+
+function renderLoad(L) {
+  const partnerMax = Math.max(...DATA.partners.map(p => p.sessions));
+  const regLabel = r => (L.regions && L.regions[r]) ? L.regions[r] : r;
+  document.getElementById('partner-load').innerHTML = DATA.partners.map(p =>
+    `<div class="load-row">
+      <span class="load-name" title="${escHtml(p.name)}">${escHtml(p.name)}</span>
+      <div class="load-bar-wrap">
+        <div class="load-bar ${p.cls}" style="width:${Math.round(p.sessions/partnerMax*100)}%"></div>
+      </div>
+      <span class="load-val">${p.sessions}</span>
+    </div>`
+  ).join('');
+
+  const mgrMax = Math.max(...DATA.managerLoad.map(m => m.sessions));
+  document.getElementById('manager-load').innerHTML = DATA.managerLoad.map(m =>
+    `<div class="load-row">
+      <span class="load-name" title="${escHtml(m.name)}">${escHtml(m.name)}</span>
+      <div class="load-bar-wrap">
+        <div class="load-bar ${m.cls}" style="width:${Math.round(m.sessions/mgrMax*100)}%"></div>
+      </div>
+      <span class="load-val">${m.sessions}</span>
+    </div>`
+  ).join('');
+}
+
+function setLang(lang) { renderAll(lang); }
+
+window.addEventListener('DOMContentLoaded', () => renderAll('en'));
+</script>
+
+</body>
+</html>
