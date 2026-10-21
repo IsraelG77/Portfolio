@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Next Gen | Recruitment analytics demo</title>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,400i&amp;f[]=general-sans@400,500,600&amp;display=swap">
+<link rel="stylesheet" href="assets/demo.css">
+<meta name="theme-color" content="#f6f4ef">
+<meta name="robots" content="noindex">
+</head>
+<body class="ng">
+<header class="dnav"><div class="wrap"><a class="dnav-back nav-back" href="index-en.html"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to portfolio</span></a><span class="dnav-brand">Next Gen — Recruitment analytics</span><div class="dnav-right"><div class="lang"><a id="btn-pt" class="lang-btn" href="nextgen-demo.html" hreflang="pt-BR">PT</a><span aria-hidden="true">/</span><a id="btn-en" class="lang-btn" href="nextgen-demo-en.html" hreflang="en" aria-current="page">EN</a></div></div></div></header><section class="dintro"><div class="wrap"><p class="deyebrow">Demo · Fictional data · Internship selection</p><h1>Next Gen: tracking <em>17,500+ applications</em> stage by stage</h1><p class="dlede">My role in the real project: end-to-end management of the Next Gen internship selection process and development of the automated analysis workflow. The real program received over 17,500 applications; analysis time was reduced by 90%. This demo uses a separate set of 300 fictional applications to illustrate the interface. Assessment scores, demographic distributions, and outcomes are simulated and are not evidence about real candidates.</p><div class="tabs" role="tablist">
+<button class="tab-btn active" data-target="tab-overview">Overview</button>
+<button class="tab-btn" data-target="tab-assessments">Assessments</button>
+<button class="tab-btn" data-target="tab-correlation">Assessment scores</button>
+<button class="tab-btn" data-target="tab-diversity">D&amp;I analysis</button>
+<button class="tab-btn" data-target="tab-report">Candidate data</button>
+</div></div></section>
+<main class="wrap">
+<!-- TAB 1: OVERVIEW -->
+<div class="tab-content active" id="tab-overview">
+<div class="grid-4">
+<div class="panel">
+<div class="panel-title">Total applications</div>
+<div class="kpi-val" id="kpi-total">0</div>
+<div class="kpi-sub">Fictional applications</div>
+</div>
+<div class="panel">
+<div class="panel-title">Valid applications</div>
+<div class="kpi-val kpi-color-valid" id="kpi-valid">0</div>
+<div class="kpi-sub" id="kpi-valid-sub">0% valid applications</div>
+</div>
+<div class="panel">
+<div class="panel-title">Invalid applications</div>
+<div class="kpi-val kpi-color-invalid" id="kpi-invalid">0</div>
+<div class="kpi-sub">Eligibility, duplicates, or incomplete records</div>
+</div>
+<div class="panel">
+<div class="panel-title">Offers in the simulation</div>
+<div id="kpi-approved-final" class="kpi-val kpi-color-accent">0</div>
+<div class="kpi-sub">Illustrative offer outcome</div>
+</div>
+</div>
+<div class="grid-2">
+<div class="panel">
+<div class="panel-title">Selection funnel</div>
+<p class="panel-desc">Volumes and conversion across stages to monitor selection progress. All figures in this demo are fictional.</p>
+<div class="funnel-container" id="funnel-chart-container">
+<!-- Renderizado via JS -->
+</div>
+</div>
+<div class="panel">
+<div class="panel-title">Reasons for invalidation</div>
+<div class="chart-box">
+<canvas id="invalidChart"></canvas>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 2: ASSESSMENTS -->
+<div class="tab-content" id="tab-assessments">
+<div class="grid-4" id="assessment-status-cards">
+<!-- Renderizado via JS -->
+</div>
+<div class="panel">
+<div class="panel-title">Assessment distribution (Mindsight × Voxy)</div>
+<p class="panel-desc">Distribution of situational assessment and language test results. Includes only valid applications with both assessments completed.</p>
+<div id="matrix-container" style="overflow-x:auto">
+<!-- Heatmap renderizado via JS -->
+</div>
+</div>
+</div>
+<!-- TAB 3: CORRELATION -->
+<div class="tab-content" id="tab-correlation">
+<div class="panel">
+<div class="panel-title">Technical and behavioral assessment scores</div>
+<p class="panel-desc">Compares technical and behavioral scores for valid applications with both assessments completed. Colors show offer outcomes or membership in the demo diversity grouping. The chart does not establish assessment validity or prove bias reduction.</p>
+<div style="margin-bottom:1.25rem">
+<button id="toggle-scatter-di" class="dbtn">
+Switch view: offer outcome / diversity groups</button>
+</div>
+<div class="chart-box" style="height:440px">
+<canvas id="scatterChart"></canvas>
+</div>
+</div>
+</div>
+<!-- TAB 4: D&I -->
+<div class="tab-content" id="tab-diversity">
+<div class="grid-3" id="di-bars-container">
+<!-- Barras de gênero, raça, pcd Renderizadas via JS -->
+</div>
+<div class="panel">
+<div class="panel-title">Group representation at each stage</div>
+<p class="panel-desc">Share of participants included in the diversity grouping at each stage, calculated against that stage’s total — not a survival or progression rate. In this simulation, the grouping includes women, Black/Brown people under Brazilian race categories, and people with disabilities, without double counting. This analysis can raise questions for investigation; it does not guarantee the absence of bias.</p>
+<div class="chart-box" style="height:360px">
+<canvas id="diFunnelChart"></canvas>
+</div>
+</div>
+</div>
+<!-- TAB 5: DATA REPORT -->
+<div class="tab-content" id="tab-report">
+<div class="filters-bar" id="report-filters">
+<!-- Dropdowns renderizados via JS -->
+</div>
+<div class="panel">
+<div class="table-head">
+<div class="panel-title">Candidate records and filters</div>
+<button id="btn-export" class="dbtn dbtn-primary">
+Export filtered CSV</button>
+</div>
+<div class="table-scroll">
+<table id="dataTable">
+<thead>
+<tr>
+<th>Fictional name</th>
+<th>State (Brazil)</th>
+<th>Screening status</th>
+<th>Invalidation reason</th>
+<th>Mindsight</th>
+<th>Voxy</th>
+<th>Technical score</th>
+<th>Behavioral score</th>
+<th>Included in group indicator?</th>
+<th>Stage 1</th>
+<th>Offer outcome</th>
+</tr>
+</thead>
+<tbody>
+<!-- Inject via JS -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main><footer class="dfoot"><div class="wrap"><span>Israel Gilbernon · Demo with fictional data</span><a href="https://www.linkedin.com/in/gilbernon" target="_blank" rel="noopener">LinkedIn</a></div></footer>
+<script>const EN=true;
+const L={"valid": "Valid", "invalid": "Invalid", "passed": "Passed", "notpassed": "Not passed", "offer": "Offer", "nooffer": "No Offer", "na": "N/A", "woman": "Woman", "man": "Man", "other": "Non-binary / prefer not to say", "black": "Black/Brown", "white": "White", "yes": "Yes", "no": "No", "all": "All applications", "eligible": "Valid applications", "both": "Both assessments completed", "shortlist": "Shortlisted — stage 1", "offers": "Offer in simulation", "validrate": "% valid", "conversion": "conversion", "testboth": "Both completed", "mindonly": "Mindsight only", "voxyonly": "Voxy only", "neither": "Neither completed", "group": "Included in diversity grouping", "others": "Other participants", "offeryes": "Offer in simulation", "offerno": "No offer in simulation", "tech": "Technical score (%)", "behavior": "Behavioral score (out of 10)", "gender": "Gender · valid applications", "race": "Race · Brazilian categories", "disability": "Disability · valid applications", "otherlabel": "Non-binary / prefer not to say", "blacklabel": "Black/Brown (Brazilian categories)", "grouppercent": "Share of stage participants in diversity grouping (%)", "status": "Screening status", "state": "State (Brazil)", "mind": "Mindsight result", "stage": "Stage 1", "outcome": "Offer outcome", "allrecords": "All records", "search": "Search by name, ID, or any field", "prev": "Previous", "next": "Next", "showing": "records", "export": "Fictional_Name,State,Screening_Status,Invalidation_Reason,Mindsight,Voxy,Technical_Score,Behavioral_Score,Group_Indicator,Stage1,Offer", "groupview": "Current view: diversity grouping", "offerview": "Current view: offer outcome"};
+let demoSeed = 2026; function demoRandom(){ demoSeed = (Math.imul(1664525, demoSeed) + 1013904223) >>> 0; return demoSeed / 4294967296; }
+
+
+
+
+
+    
+    const states = ['SP','RJ','MG','RS','PR','SC','BA','PE','CE', 'GO'];
+    const invalidReasons = ['Incomplete', 'Eligibility requirements not met', 'Duplicate application', 'No academic enrollment'];
+    const mindSights = ['Low', 'Below average', 'Average', 'Above average', 'High'];
+    const voxyLevels = ['N/A', 'A1', 'A2', 'B1', 'B2', 'C1'];
+
+    function generateMockData(count = 300) {
+      const data = [];
+      for(let i=0; i<count; i++) {
+        const id = (1000 + i).toString();
+
+        const isValid = demoRandom() < 0.75;
+        const validStatus = isValid ? 'Valid' : 'Invalid';
+        const invalidReason = isValid ? '-' : invalidReasons[Math.floor(demoRandom() * invalidReasons.length)];
+        
+        let mIdx = 0, vIdx = 0;
+        let testedBoth = false;
+        
+        if (isValid) {
+          const randTest = demoRandom();
+          if (randTest < 0.60) {
+
+            mIdx = Math.floor(demoRandom() * mindSights.length);
+            vIdx = Math.floor(demoRandom() * (voxyLevels.length - 1)) + 1; // 1 a 5
+            testedBoth = true;
+          } else if (randTest < 0.75) {
+
+            mIdx = Math.floor(demoRandom() * mindSights.length);
+            vIdx = 0;
+          } else if (randTest < 0.85) {
+
+            mIdx = -1; 
+            vIdx = Math.floor(demoRandom() * (voxyLevels.length - 1)) + 1;
+          } else {
+
+            mIdx = -1;
+            vIdx = 0;
+          }
+        } else {
+          mIdx = demoRandom() < 0.2 ? Math.floor(demoRandom() * 3) : -1;
+          vIdx = demoRandom() < 0.2 ? Math.floor(demoRandom() * 2) : 0;
+        }
+
+        const msVal = (mIdx === -1) ? 'N/A' : mindSights[mIdx];
+        const voxVal = voxyLevels[vIdx];
+
+        let qualScore = 0;
+        let digScore = 0;
+        if (isValid && testedBoth) {
+
+          const base = 45 + (mIdx * 8); 
+          qualScore = Math.min(100, Math.max(30, Math.floor(base + (demoRandom() * 30 - 15))));
+          digScore = (demoRandom() * 4 + 6).toFixed(1); // 6.0 a 10.0
+        }
+
+        let passPhase1 = false;
+        let passPhase2 = false;
+
+        if (isValid && qualScore >= 52 && parseFloat(digScore) >= 6.8) {
+          passPhase1 = true;
+        }
+
+        if (isValid && testedBoth && !passPhase1 && demoRandom() < 0.15) passPhase1 = true; 
+
+        if (passPhase1) {
+
+          if (qualScore > 65 && parseFloat(digScore) > 7.5 && demoRandom() < 0.7) {
+            passPhase2 = true;
+          } else if (demoRandom() < 0.4) {
+             passPhase2 = true;
+          }
+        }
+
+        const gender = demoRandom() < 0.45 ? 'Woman' : (demoRandom() < 0.95 ? 'Man' : 'Non-binary / prefer not to say');
+        const isBlack = demoRandom() < 0.42; 
+        const race = isBlack ? 'Black/Brown' : 'White';
+        const isDisability = demoRandom() < 0.04; 
+        const isMinority = (gender === 'Woman') || isBlack || isDisability;
+
+        data.push({
+          id: id,
+          name: `Fictional candidate #${id}`,
+          state: states[Math.floor(demoRandom() * states.length)],
+          validStatus: validStatus,
+          invalidReason: invalidReason,
+          mindsight: msVal,
+          voxy: voxVal,
+          qualified: qualScore.toString(),
+          digai: digScore.toString(),
+          gender: gender,
+          race: race,
+          pcd: isDisability ? 'Yes' : 'No',
+          isMinority: isMinority,
+          phase1: passPhase1 ? 'Passed' : (isValid ? 'Not passed' : '-'),
+          phase2: passPhase2 ? 'Offer' : (passPhase1 ? 'No Offer' : '-')
+        });
+      }
+      return data;
+    }
+
+    const dataSource = generateMockData(300);
+
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $id=id=>document.getElementById(id);
+const valid=dataSource.filter(d=>d.validStatus===L.valid), invalid=dataSource.filter(d=>d.validStatus===L.invalid);
+const both=valid.filter(d=>d.mindsight!==L.na&&d.voxy!==L.na), p1=valid.filter(d=>d.phase1===L.passed), p2=p1.filter(d=>d.phase2===L.offer);
+const steps=[{l:L.all,a:dataSource},{l:L.eligible,a:valid},{l:L.both,a:both},{l:L.shortlist,a:p1},{l:L.offers,a:p2}];
+$id('kpi-total').textContent=dataSource.length;$id('kpi-valid').textContent=valid.length;$id('kpi-valid-sub').textContent=Math.round(valid.length/dataSource.length*100)+L.validrate;$id('kpi-invalid').textContent=invalid.length;$id('kpi-approved-final').textContent=p2.length;
+$id('funnel-chart-container').innerHTML=steps.map((s,i)=>`<div class="funnel-step"><div class="funnel-label">${esc(s.l)}<br><small>${i?Math.round(s.a.length/(steps[i-1].a.length||1)*100)+'% '+L.conversion:''}</small></div><div class="funnel-bar-wrapper"><div class="funnel-bar" style="width:${s.a.length/dataSource.length*100}%"></div></div><div class="funnel-val">${s.a.length}</div></div>`).join('');
+function svgReplace(id,content,label){const el=$id(id);el.outerHTML=`<svg id="${id}" viewBox="0 0 800 360" role="img" aria-label="${esc(label)}" style="width:100%;height:100%;font:13px 'General Sans',Arial,sans-serif;overflow:visible">${content}</svg>`;}
+const invCounts={};invalid.forEach(d=>invCounts[d.invalidReason]=(invCounts[d.invalidReason]||0)+1);
+const invMax=Math.max(1,...Object.values(invCounts));$id('invalidChart').outerHTML='<div id="invalidChart" role="img" aria-label="'+esc(L.invalid)+'">'+Object.entries(invCounts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="di-row"><div class="di-label"><span>${esc(k)}</span><span>${v}</span></div><div class="di-bar-track"><div class="di-bar-fill" style="width:${v/invMax*100}%;background:#a6423a"></div></div></div>`).join('')+'</div>';
+const counts=[both.length,valid.filter(d=>d.mindsight!==L.na&&d.voxy===L.na).length,valid.filter(d=>d.mindsight===L.na&&d.voxy!==L.na).length,valid.filter(d=>d.mindsight===L.na&&d.voxy===L.na).length];
+$id('assessment-status-cards').innerHTML=[L.testboth,L.mindonly,L.voxyonly,L.neither].map((t,i)=>`<div class="panel status-card"><div style="font-family:var(--font-display);font-size:2rem;line-height:1;margin-bottom:.4rem;color:#23466e">${counts[i]}</div><div>${esc(t)}</div></div>`).join('');
+let heat='<div class="heatmap-grid"><div></div>'+['A1','A2','B1','B2','C1'].map(v=>`<div class="heatmap-header">${v}</div>`).join('');
+[...mindSights].reverse().forEach(m=>{heat+=`<div class="heatmap-y-label">${esc(m)}</div>`;['A1','A2','B1','B2','C1'].forEach(v=>{const n=both.filter(d=>d.mindsight===m&&d.voxy===v).length;heat+=`<div class="heatmap-cell" title="${esc(m)} / ${v}: ${n}" style="background:rgba(35,70,110,${Math.max(.05,Math.min(1,n/12))});color:${n/12>.5?'#fff':'#1d2230'}">${n}</div>`;});});$id('matrix-container').innerHTML=heat+'</div>';
+let groupView=false;
+function scatter(){let c='<line x1="75" y1="300" x2="760" y2="300" stroke="#8c8f99"/><line x1="75" y1="20" x2="75" y2="300" stroke="#8c8f99"/>';
+for(let x=30;x<=100;x+=10){let xx=75+(x-30)/70*680;c+=`<text x="${xx}" y="320" text-anchor="middle" fill="#6b7080">${x}</text><line x1="${xx}" y1="20" x2="${xx}" y2="300" stroke="#1d223014"/>`;}
+for(let y=6;y<=10;y++){let yy=300-(y-5)/5.5*270;c+=`<text x="60" y="${yy}" text-anchor="end" fill="#6b7080">${y}</text>`;}
+both.forEach(d=>{let x=75+(Number(d.qualified)-30)/70*680,y=300-(Number(d.digai)-5)/5.5*270;let high=groupView?d.isMinority:d.phase2===L.offer;c+=`<circle cx="${x}" cy="${y}" r="5" fill="${high?(groupView?'#23466e':'#2f6f5e'):'#c3beb2'}" opacity=".8"><title>${esc(d.name)} · ${esc(L.tech)}: ${d.qualified} · ${esc(L.behavior)}: ${d.digai} · ${esc(high?(groupView?L.group:L.offeryes):(groupView?L.others:L.offerno))}</title></circle>`;});
+c+=`<text x="400" y="350" text-anchor="middle" fill="#4a5163">${esc(L.tech)}</text><text transform="translate(18,180) rotate(-90)" text-anchor="middle" fill="#4a5163">${esc(L.behavior)}</text>`;
+if($id('scatterChart').tagName.toLowerCase()==='svg'){$id('scatterChart').innerHTML=c;}else svgReplace('scatterChart',c,L.tech+' / '+L.behavior);
+$id('toggle-scatter-di').textContent=groupView?L.groupview:L.offerview;
+}
+scatter();$id('toggle-scatter-di').addEventListener('click',()=>{groupView=!groupView;scatter();});
+function bars(title,items){let n=items.reduce((a,x)=>a+x[1],0);return `<div class="panel"><h2 class="panel-title">${esc(title)}</h2>`+items.map(([label,count],i)=>`<div class="di-row"><div class="di-label"><span>${esc(label)}</span><span>${Math.round(count/(n||1)*100)}% (${count})</span></div><div class="di-bar-track"><div class="di-bar-fill" style="width:${count/(n||1)*100}%;background:${['#23466e','#8aa1bd','#c3beb2'][i%3]}"></div></div></div>`).join('')+'</div>';}
+$id('di-bars-container').innerHTML=bars(L.gender,[[L.woman,valid.filter(d=>d.gender===L.woman).length],[L.man,valid.filter(d=>d.gender===L.man).length],[L.otherlabel,valid.filter(d=>d.gender===L.other).length]])+bars(L.race,[[L.blacklabel,valid.filter(d=>d.race===L.black).length],[L.white,valid.filter(d=>d.race===L.white).length]])+bars(L.disability,[[L.yes,valid.filter(d=>d.pcd===L.yes).length],[L.no,valid.filter(d=>d.pcd===L.no).length]]);
+const proportions=steps.map(s=>s.a.filter(d=>d.isMinority).length/(s.a.length||1)*100);
+let line='';for(let y=0;y<=100;y+=25)line+=`<text x="55" y="${300-y*2.4}" text-anchor="end" fill="#6b7080">${y}%</text><line x1="65" y1="${300-y*2.4}" x2="760" y2="${300-y*2.4}" stroke="#1d22301f"/>`;
+line+=`<polyline points="${proportions.map((v,i)=>`${90+i*160},${300-v*2.4}`).join(' ')}" fill="none" stroke="#23466e" stroke-width="3"/>`;
+proportions.forEach((v,i)=>line+=`<circle cx="${90+i*160}" cy="${300-v*2.4}" r="6" fill="#23466e"><title>${esc(steps[i].l)}: ${v.toFixed(1)}%</title></circle><text x="${90+i*160}" y="${285-v*2.4}" text-anchor="middle" fill="#1d2230">${v.toFixed(1)}%</text><text x="${90+i*160}" y="330" text-anchor="middle" fill="#6b7080">${i+1}</text>`);
+line+=`<text x="400" y="355" text-anchor="middle" fill="#4a5163">${esc(L.grouppercent)}</text>`;svgReplace('diFunnelChart',line,L.grouppercent);
+const filters=[{key:'validStatus',label:L.status,opts:[L.valid,L.invalid]},{key:'state',label:L.state,opts:states},{key:'mindsight',label:L.mind,opts:mindSights},{key:'phase1',label:L.stage,opts:[L.passed,L.notpassed]},{key:'phase2',label:L.outcome,opts:[L.offer,L.nooffer]}];
+$id('report-filters').innerHTML=filters.map((f,i)=>`<div class="filter-group"><label for="filter-${i}">${esc(f.label)}</label><select id="filter-${i}"><option value="">${esc(L.allrecords)}</option>${f.opts.map(o=>`<option>${esc(o)}</option>`).join('')}</select></div>`).join('')+`<div class="filter-group"><label for="table-search">${esc(L.search)}</label><input id="table-search" type="search" ></div>`;
+const pager=document.createElement('div');pager.className='pager';pager.innerHTML=`<button id="prev-page">${esc(L.prev)}</button><span id="page-info"></span><button id="next-page">${esc(L.next)}</button>`;$id('dataTable').parentNode.appendChild(pager);
+let pageIndex=0,filtered=[...dataSource];const pageSize=20;
+function rowValues(d){return [d.name,d.state,d.validStatus,d.invalidReason,d.mindsight,d.voxy,Number(d.qualified)>0?d.qualified:'-',Number(d.digai)>0?d.digai:'-',d.isMinority?L.yes:L.no,d.phase1,d.phase2];}
+
+let sortColumn=-1,sortAscending=true;
+function applySort(){if(sortColumn<0)return;filtered.sort((a,b)=>{const x=rowValues(a)[sortColumn],y=rowValues(b)[sortColumn];const nx=Number(x),ny=Number(y);const cmp=(x!=='-'&&y!=='-'&&x!==''&&y!==''&&Number.isFinite(nx)&&Number.isFinite(ny))?nx-ny:String(x).localeCompare(String(y),EN?'en':'pt-BR',{numeric:true});return sortAscending?cmp:-cmp;});}
+document.querySelectorAll('#dataTable th').forEach((th,i)=>{th.tabIndex=0;th.style.cursor='pointer';th.setAttribute('aria-sort','none');const sort=()=>{sortAscending=sortColumn===i?!sortAscending:true;sortColumn=i;document.querySelectorAll('#dataTable th').forEach(t=>t.setAttribute('aria-sort','none'));th.setAttribute('aria-sort',sortAscending?'ascending':'descending');pageIndex=0;renderTable();};th.addEventListener('click',sort);th.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();sort();}});});
+
+function renderTable(){applySort();const max=Math.max(0,Math.ceil(filtered.length/pageSize)-1);pageIndex=Math.min(pageIndex,max);$id('dataTable').querySelector('tbody').innerHTML=filtered.slice(pageIndex*pageSize,(pageIndex+1)*pageSize).map(d=>'<tr>'+rowValues(d).map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('');$id('page-info').textContent=`${filtered.length?pageIndex*pageSize+1:0}–${Math.min((pageIndex+1)*pageSize,filtered.length)} / ${filtered.length} ${L.showing}`;$id('prev-page').disabled=pageIndex===0;$id('next-page').disabled=pageIndex>=max;}
+function applyFilters(){const q=$id('table-search').value.toLowerCase();filtered=dataSource.filter(d=>filters.every((f,i)=>!$id('filter-'+i).value||d[f.key]===$id('filter-'+i).value)&&rowValues(d).join(' ').toLowerCase().includes(q));pageIndex=0;renderTable();}
+filters.forEach((f,i)=>$id('filter-'+i).addEventListener('change',applyFilters));$id('table-search').addEventListener('input',applyFilters);$id('prev-page').onclick=()=>{pageIndex--;renderTable();};$id('next-page').onclick=()=>{pageIndex++;renderTable();};renderTable();
+$id('btn-export').onclick=()=>{const csv='\ufeff'+L.export+'\n'+filtered.map(d=>rowValues(d).map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=EN?'nextgen-demo-en.csv':'nextgen-demo-pt.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn,.tab-content').forEach(el=>el.classList.remove('active'));btn.classList.add('active');$id(btn.dataset.target).classList.add('active');}));
+</script></body>
+</html>

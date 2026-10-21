@@ -1,424 +1,87 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calibration Session Planner — Demo | Israel Gilbernon</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg:      #0f1117;
-      --sf:      #1a1d27;
-      --sf2:     #22263a;
-      --bd:      #2e3347;
-      --text:    #e8eaf0;
-      --muted:   #8b90a8;
-      --r:       12px;
-      --latam:   #6c63ff;
-      --na:      #00c9a7;
-      --emea:    #ffd166;
-      --apac:    #ff6b6b;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg); color: var(--text);
-      font-family: 'Inter', system-ui, sans-serif;
-      font-size: 14px; line-height: 1.6;
-    }
-
-    a { color: inherit; text-decoration: none; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 3px; }
-
-    /* ── NAV ─────────────────────────────────────────────────────── */
-    .nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(15,17,23,.92); backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--bd);
-      padding: 0 28px; height: 56px;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    }
-    .nav-title { font-size: 15px; font-weight: 700; letter-spacing: -.3px; }
-    .nav-right  { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-    .lang-btn {
-      background: none; border: 1px solid var(--bd); border-radius: 6px;
-      color: var(--muted); font-size: 11px; font-weight: 700;
-      padding: 4px 10px; cursor: pointer; letter-spacing: .5px;
-      transition: all .15s;
-    }
-    .lang-btn.active, .lang-btn:hover { border-color: var(--latam); color: var(--text); }
-    .nav-cta {
-      background: var(--latam); color: #fff; border: none; border-radius: 8px;
-      padding: 7px 14px; font-size: 12px; font-weight: 600;
-      cursor: pointer; white-space: nowrap; transition: opacity .15s;
-    }
-    .nav-cta:hover { opacity: .85; }
-    .nav-back {
-      border: 1px solid var(--bd); border-radius: 8px; color: var(--muted);
-      padding: 7px 12px; font-size: 12px; transition: all .15s;
-    }
-    .nav-back:hover { border-color: var(--bd); color: var(--text); }
-
-    /* ── BANNER ──────────────────────────────────────────────────── */
-    .banner {
-      background: rgba(255,209,102,.07); border-bottom: 1px solid rgba(255,209,102,.18);
-      padding: 11px 28px;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px; flex-wrap: wrap;
-    }
-    .banner-left { display: flex; align-items: center; gap: 10px; }
-    .banner-dot  { width: 8px; height: 8px; border-radius: 50%; background: var(--emea); flex-shrink: 0; }
-    .banner-text { font-size: 12px; color: #e8d08a; line-height: 1.5; }
-    .banner-text strong { color: var(--emea); }
-    .banner-scale {
-      font-size: 11px; color: var(--muted);
-      background: rgba(255,255,255,.04); border: 1px solid var(--bd);
-      border-radius: 20px; padding: 4px 12px; white-space: nowrap;
-    }
-
-    /* ── LAYOUT ──────────────────────────────────────────────────── */
-    .page { max-width: 1200px; margin: 0 auto; padding: 48px 28px 80px; }
-
-    /* ── HERO STATS ──────────────────────────────────────────────── */
-    .hero { margin-bottom: 56px; }
-    .hero-label {
-      font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
-      color: var(--muted); margin-bottom: 16px;
-    }
-    .hero-title {
-      font-size: clamp(22px, 3.5vw, 34px); font-weight: 800;
-      letter-spacing: -.5px; line-height: 1.15; margin-bottom: 8px;
-    }
-    .hero-title span { color: var(--latam); }
-    .hero-sub { font-size: 14px; color: var(--muted); max-width: 540px; margin-bottom: 36px; }
-    .stats-row {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
-    }
-    .stat {
-      background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r);
-      padding: 18px 20px;
-    }
-    .stat-val {
-      font-size: 32px; font-weight: 800; letter-spacing: -.5px;
-      line-height: 1; margin-bottom: 4px;
-    }
-    .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
-
-    /* ── SECTION CHROME ──────────────────────────────────────────── */
-    .section { margin-bottom: 64px; }
-    .section-hd {
-      display: flex; align-items: baseline; justify-content: space-between;
-      gap: 16px; margin-bottom: 24px;
-      padding-bottom: 14px; border-bottom: 1px solid var(--bd);
-    }
-    .section-hd h2 { font-size: 16px; font-weight: 700; letter-spacing: -.2px; }
-    .section-hd p  { font-size: 12px; color: var(--muted); }
-
-    /* ── SCOPE SECTION ───────────────────────────────────────────── */
-    .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .scope-card {
-      background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r); padding: 22px 24px;
-    }
-    .scope-card h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 16px; }
-
-    .seniority-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .seniority-name { font-size: 13px; width: 90px; flex-shrink: 0; }
-    .seniority-bar-wrap { flex: 1; background: var(--sf2); border-radius: 4px; height: 8px; overflow: hidden; }
-    .seniority-bar { height: 100%; border-radius: 4px; background: var(--latam); }
-    .seniority-count { font-size: 12px; color: var(--muted); width: 48px; text-align: right; flex-shrink: 0; }
-
-    .partner-list { display: flex; flex-direction: column; gap: 10px; }
-    .partner-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .partner-info { display: flex; align-items: center; gap: 8px; }
-    .partner-avatar {
-      width: 30px; height: 30px; border-radius: 8px;
-      background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.25);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; color: var(--latam); flex-shrink: 0;
-    }
-    .partner-name { font-size: 13px; }
-    .partner-region { font-size: 11px; color: var(--muted); }
-    .partner-sessions {
-      font-size: 12px; font-weight: 700; color: var(--text);
-      background: var(--sf2); border: 1px solid var(--bd);
-      border-radius: 20px; padding: 2px 10px; white-space: nowrap;
-    }
-
-    /* ── SESSIONS SECTION ────────────────────────────────────────── */
-    .region-block { margin-bottom: 40px; }
-    .region-hd {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
-    }
-    .region-badge {
-      font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
-      padding: 4px 12px; border-radius: 20px;
-    }
-    .region-badge.latam { background: rgba(108,99,255,.18); color: var(--latam); }
-    .region-badge.na    { background: rgba(0,201,167,.15);  color: var(--na);   }
-    .region-badge.emea  { background: rgba(255,209,102,.15); color: var(--emea); }
-    .region-badge.apac  { background: rgba(255,107,107,.15); color: var(--apac); }
-    .region-count { font-size: 12px; color: var(--muted); }
-
-    .sessions-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 14px;
-    }
-
-    .session-card {
-      background: var(--sf); border: 1px solid var(--bd);
-      border-radius: var(--r); overflow: hidden;
-      transition: border-color .15s, transform .15s;
-    }
-    .session-card:hover { border-color: rgba(255,255,255,.15); transform: translateY(-2px); }
-    .session-card-top { height: 3px; }
-    .session-card-top.latam { background: var(--latam); }
-    .session-card-top.na    { background: var(--na); }
-    .session-card-top.emea  { background: var(--emea); }
-    .session-card-top.apac  { background: var(--apac); }
-    .session-card-body { padding: 16px 18px; }
-
-    .session-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .session-id   { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-    .level-pill   {
-      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
-      border: 1px solid var(--bd); color: var(--text); background: var(--sf2);
-    }
-    .level-pill.mixed { color: var(--emea); border-color: rgba(255,209,102,.3); background: rgba(255,209,102,.08); }
-
-    .session-roles { margin-bottom: 12px; }
-    .role-row { display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0; }
-    .role-key { color: var(--muted); }
-    .role-val { font-weight: 600; }
-
-    .session-counts { display: flex; gap: 8px; margin-bottom: 12px; }
-    .count-box {
-      background: var(--sf2); border: 1px solid var(--bd); border-radius: 8px;
-      padding: 8px 12px; flex: 1; text-align: center;
-    }
-    .count-num { font-size: 20px; font-weight: 800; line-height: 1; }
-    .count-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
-
-    .session-managers { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
-    .mgr-pill {
-      font-size: 10px; padding: 2px 8px; border-radius: 20px;
-      background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.2); color: #a8a4ff;
-    }
-    .mgr-pill.na   { background: rgba(0,201,167,.1);   border-color: rgba(0,201,167,.2);   color: #5de8cf; }
-    .mgr-pill.emea { background: rgba(255,209,102,.1); border-color: rgba(255,209,102,.2); color: #ffe08a; }
-    .mgr-pill.apac { background: rgba(255,107,107,.1); border-color: rgba(255,107,107,.2); color: #ff9696; }
-
-    .session-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-    .tag {
-      font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
-      letter-spacing: .3px; text-transform: uppercase;
-    }
-    .tag-review    { background: rgba(255,107,107,.12); border: 1px solid rgba(255,107,107,.25); color: var(--apac); }
-    .tag-exception { background: rgba(255,209,102,.1);  border: 1px solid rgba(255,209,102,.25); color: var(--emea); }
-
-    .session-footer {
-      margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--bd);
-    }
-    .expand-btn {
-      background: none; border: 1px solid var(--bd); border-radius: 6px;
-      color: var(--muted); font-size: 11px; font-weight: 600;
-      padding: 5px 12px; cursor: pointer; width: 100%;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      transition: color .15s, border-color .15s;
-    }
-    .expand-btn:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
-    .expand-btn .arrow { font-size: 9px; transition: transform .2s; }
-    .expand-btn.open .arrow { transform: rotate(180deg); }
-
-    .session-detail {
-      display: none; margin-top: 12px;
-      border-top: 1px solid var(--bd); padding-top: 12px;
-    }
-    .session-detail.open { display: block; }
-    .detail-table { width: 100%; border-collapse: collapse; }
-    .detail-table th {
-      font-size: 9px; text-transform: uppercase; letter-spacing: .6px;
-      color: var(--muted); font-weight: 700; text-align: left;
-      padding: 4px 8px; border-bottom: 1px solid var(--bd);
-    }
-    .detail-table td {
-      font-size: 11px; padding: 5px 8px;
-      border-bottom: 1px solid rgba(46,51,71,.5); vertical-align: middle;
-    }
-    .detail-table tr:last-child td { border-bottom: none; }
-    .detail-table tr:hover td { background: rgba(255,255,255,.03); }
-    .person-is-mgr {
-      font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px;
-      background: rgba(255,107,107,.12); border: 1px solid rgba(255,107,107,.25);
-      color: var(--apac); text-transform: uppercase; letter-spacing: .3px;
-      white-space: nowrap;
-    }
-
-    /* ── LEGEND ──────────────────────────────────────────────────── */
-    .legend {
-      display: flex; flex-wrap: wrap; gap: 16px;
-      margin-top: 20px; padding: 16px 20px;
-      background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r);
-    }
-    .legend-item { display: flex; align-items: flex-start; gap: 8px; }
-    .legend-tag  { flex-shrink: 0; margin-top: 1px; }
-    .legend-desc { font-size: 11px; color: var(--muted); line-height: 1.5; max-width: 260px; }
-
-    /* ── LOAD SECTION ────────────────────────────────────────────── */
-    .load-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .load-card {
-      background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r); padding: 22px 24px;
-    }
-    .load-card h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 18px; }
-
-    .load-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .load-name { font-size: 12px; width: 100px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .load-bar-wrap { flex: 1; background: var(--sf2); border-radius: 4px; height: 8px; overflow: hidden; }
-    .load-bar  { height: 100%; border-radius: 4px; }
-    .load-bar.latam { background: var(--latam); }
-    .load-bar.na    { background: var(--na); }
-    .load-bar.emea  { background: var(--emea); }
-    .load-bar.apac  { background: var(--apac); }
-    .load-val  { font-size: 12px; font-weight: 700; width: 32px; text-align: right; flex-shrink: 0; }
-
-    /* ── RULES CALLOUT ───────────────────────────────────────────── */
-    .rules-callout {
-      background: rgba(108,99,255,.06); border: 1px solid rgba(108,99,255,.18);
-      border-radius: var(--r); padding: 20px 24px; margin-top: 20px;
-    }
-    .rules-callout h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--latam); margin-bottom: 12px; }
-    .rules-list { display: flex; flex-wrap: wrap; gap: 8px; }
-    .rule-chip {
-      font-size: 11px; padding: 4px 12px; border-radius: 20px;
-      background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.2); color: #b8b4ff;
-    }
-
-    /* ── FOOTER CTA ──────────────────────────────────────────────── */
-    .footer-cta {
-      background: var(--sf); border: 1px solid var(--bd); border-radius: var(--r);
-      padding: 36px 40px; text-align: center; margin-top: 64px;
-    }
-    .footer-cta h3 { font-size: 20px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 10px; }
-    .footer-cta p  { font-size: 13px; color: var(--muted); max-width: 480px; margin: 0 auto 24px; line-height: 1.7; }
-    .footer-cta a  {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--latam); color: #fff; border-radius: 8px;
-      padding: 10px 22px; font-size: 13px; font-weight: 600;
-      transition: opacity .15s;
-    }
-    .footer-cta a:hover { opacity: .85; }
-
-    /* ── RESPONSIVE ──────────────────────────────────────────────── */
-    @media (max-width: 860px) {
-      .stats-row  { grid-template-columns: repeat(3, 1fr); }
-      .scope-grid { grid-template-columns: 1fr; }
-      .load-grid  { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 600px) {
-      .page { padding: 32px 16px 60px; }
-      .nav  { padding: 0 16px; }
-      .banner { padding: 10px 16px; }
-      .stats-row { grid-template-columns: 1fr 1fr; }
-      .nav-cta { display: none; }
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Calibration Session Planner | Session planning demo</title>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,400i&amp;f[]=general-sans@400,500,600&amp;display=swap">
+<link rel="stylesheet" href="assets/demo.css">
+<meta name="theme-color" content="#f6f4ef">
+<meta name="robots" content="noindex">
 </head>
-<body>
-
-<nav class="nav">
-  <span class="nav-title">Calibration Session Planner</span>
-  <div class="nav-right">
-    <button class="lang-btn"        id="btn-pt" onclick="setLang('pt')">PT</button>
-    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
-    <a class="nav-cta" href="https://www.linkedin.com/in/gilbernon" target="_blank" rel="noopener">
-      <span data-key="cta_nav"></span>
-    </a>
-    <a class="nav-back" href="index-en.html" data-key="back"></a>
-  </div>
-</nav>
-
-<div class="banner">
-  <div class="banner-left">
-    <div class="banner-dot"></div>
-    <p class="banner-text" data-key="banner_main"></p>
-  </div>
-  <span class="banner-scale" data-key="banner_scale"></span>
+<body class="cal">
+<header class="dnav"><div class="wrap"><a class="dnav-back nav-back" href="index-en.html" data-key="back_label"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to portfolio</span></a><span class="dnav-brand">Calibration Session Planner</span><div class="dnav-right"><div class="lang"><a id="btn-pt" class="lang-btn" href="calibration-demo.html" hreflang="pt-BR">PT</a><span aria-hidden="true">/</span><a id="btn-en" class="lang-btn" href="calibration-demo-en.html" hreflang="en" aria-current="page">EN</a></div></div></div></header>
+<div class="banner"><div class="wrap">
+<div class="banner-left">
+<div class="banner-dot"></div>
+<p class="banner-text" data-key="banner_main"></p>
 </div>
-
-<div class="page">
-
-  <!-- ── HERO ─────────────────────────────────────────────────────── -->
-  <div class="hero">
-    <p class="hero-label" data-key="hero_label"></p>
-    <h1 class="hero-title" data-key="hero_title"></h1>
-    <p class="hero-sub"   data-key="hero_sub"></p>
-    <div class="stats-row" id="stats-row"></div>
-  </div>
-
-  <!-- ── SCOPE ─────────────────────────────────────────────────────── -->
-  <div class="section">
-    <div class="section-hd">
-      <h2 data-key="scope_title"></h2>
-      <p  data-key="scope_sub"></p>
-    </div>
-    <div class="scope-grid">
-      <div class="scope-card">
-        <h3 data-key="scope_seniority"></h3>
-        <div id="seniority-bars"></div>
-      </div>
-      <div class="scope-card">
-        <h3 data-key="scope_partners"></h3>
-        <div class="partner-list" id="partner-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── SESSIONS ───────────────────────────────────────────────────── -->
-  <div class="section">
-    <div class="section-hd">
-      <h2 data-key="sessions_title"></h2>
-      <p  data-key="sessions_sub"></p>
-    </div>
-    <div id="sessions-container"></div>
-
-    <div id="legend-container"></div>
-
-    <div class="rules-callout">
-      <h4 data-key="rules_title"></h4>
-      <div class="rules-list" id="rules-list"></div>
-    </div>
-  </div>
-
-  <!-- ── LOAD ──────────────────────────────────────────────────────── -->
-  <div class="section">
-    <div class="section-hd">
-      <h2 data-key="load_title"></h2>
-      <p  data-key="load_sub"></p>
-    </div>
-    <div class="load-grid">
-      <div class="load-card">
-        <h3 data-key="load_partner_title"></h3>
-        <div id="partner-load"></div>
-      </div>
-      <div class="load-card">
-        <h3 data-key="load_manager_title"></h3>
-        <div id="manager-load"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── FOOTER CTA ─────────────────────────────────────────────────── -->
-  <div class="footer-cta">
-    <h3 data-key="footer_title"></h3>
-    <p  data-key="footer_sub"></p>
-    <a href="https://www.linkedin.com/in/gilbernon" target="_blank" rel="noopener" data-key="footer_cta"></a>
-  </div>
-
+<span class="banner-scale" data-key="banner_scale"></span>
+</div></div>
+<main class="page wrap">
+<!-- ── HERO ─────────────────────────────────────────────────────── -->
+<div class="hero">
+<p class="hero-label" data-key="hero_label"></p>
+<h1 class="hero-title" data-key="hero_title"></h1>
+<p class="hero-sub" data-key="hero_sub"></p>
+<div class="stats-row" id="stats-row"></div>
 </div>
-
+<!-- ── SCOPE ─────────────────────────────────────────────────────── -->
+<div class="section">
+<div class="section-hd">
+<h2 data-key="scope_title"></h2>
+<p data-key="scope_sub"></p>
+</div>
+<div class="scope-grid">
+<div class="scope-card">
+<h3 data-key="scope_seniority"></h3>
+<div id="seniority-bars"></div>
+</div>
+<div class="scope-card">
+<h3 data-key="scope_partners"></h3>
+<div class="partner-list" id="partner-list"></div>
+</div>
+</div>
+</div>
+<!-- ── SESSIONS ───────────────────────────────────────────────────── -->
+<div class="section">
+<div class="section-hd">
+<h2 data-key="sessions_title"></h2>
+<p data-key="sessions_sub"></p>
+</div>
+<div id="sessions-container"></div>
+<div id="legend-container"></div>
+<div class="rules-callout">
+<h4 data-key="rules_title"></h4>
+<div class="rules-list" id="rules-list"></div>
+</div>
+</div>
+<!-- ── LOAD ──────────────────────────────────────────────────────── -->
+<div class="section">
+<div class="section-hd">
+<h2 data-key="load_title"></h2>
+<p data-key="load_sub"></p>
+</div>
+<div class="load-grid">
+<div class="load-card">
+<h3 data-key="load_partner_title"></h3>
+<div id="partner-load"></div>
+</div>
+<div class="load-card">
+<h3 data-key="load_manager_title"></h3>
+<div id="manager-load"></div>
+</div>
+</div>
+</div>
+<!-- ── FOOTER CTA ─────────────────────────────────────────────────── -->
+<div class="footer-cta">
+<h3 data-key="footer_title"></h3>
+<p data-key="footer_sub"></p>
+<a data-key="footer_cta" href="https://www.linkedin.com/in/gilbernon" rel="noopener" target="_blank"></a>
+</div>
+</main><footer class="dfoot"><div class="wrap"><span>Israel Gilbernon · Demo with fictional data</span><a href="https://www.linkedin.com/in/gilbernon" target="_blank" rel="noopener">LinkedIn</a></div></footer>
 <script>
 const LANG = {
   pt: {
@@ -470,7 +133,7 @@ const LANG = {
       { val: '4',  lbl: 'Regiões'         },
       { val: '15', lbl: 'Gestores'         },
       { val: '172',lbl: 'Pessoas em escopo'},
-      { val: '17', lbl: 'Sessões calculadas'},
+      { val: '17', lbl: 'Sessões no cenário'},
       { val: '7',  lbl: 'Parceiros de RH'  },
     ],
     seniority: [
@@ -529,7 +192,7 @@ const LANG = {
       { val: '4',  lbl: 'Regions'          },
       { val: '15', lbl: 'Managers'          },
       { val: '172',lbl: 'People in scope'   },
-      { val: '17', lbl: 'Sessions computed' },
+      { val: '17', lbl: 'Scenario sessions' },
       { val: '7',  lbl: 'HR Partners'       },
     ],
     seniority: [
@@ -796,6 +459,23 @@ const DATA = {
 const REGION_ORDER = ['LATAM', 'North America', 'EMEA', 'APAC'];
 const REGION_CLS   = { LATAM: 'latam', 'North America': 'na', EMEA: 'emea', APAC: 'apac' };
 
+
+Object.assign(LANG.pt, {"cta_nav": "LinkedIn →", "back": "← Portfólio", "banner_scale": "Cenário ilustrativo · não é uma implantação em produção", "hero_label": "POC · Dados fictícios · Planejamento de sessões", "hero_title": "Planejamento de<br><span>sessões de calibração de performance</span>", "hero_sub": "Esta demonstração apresenta um cenário de distribuição de participantes, gestores e parceiros de RH por sessão. Permite examinar carga, composição e exceções. Os grupos exibidos estão pré-configurados; esta página não executa um otimizador nem avalia o desempenho dos colaboradores.", "sessions_sub": "Distribuição ilustrativa de participantes e responsáveis por sessão", "rules_title": "Regras de referência e exceções do cenário", "footer_title": "Conheça minha atuação em People", "footer_sub": "Desenvolvi uma POC de planejamento de calibração e estruturei regras de negócio por região. Tenho interesse em posições de People Analytics, Talent Operations e Talent Acquisition.", "footer_cta": "Conversar pelo LinkedIn →", "scope_sub": "Participantes e parceiros de RH presentes nos dados fictícios exibidos", "legend_exception_desc": "Sessão sinalizada como exceção no cenário ilustrativo. Os limites mínimos não são atendidos em todos os grupos; a marcação permite identificar essas situações para revisão."});
+Object.assign(LANG.en, {"cta_nav": "LinkedIn \u2192", "back": "\u2190 Portfolio", "banner_scale": "Illustrative scenario \u00b7 not a production deployment", "hero_label": "POC \u00b7 Fictional data \u00b7 Session planning", "hero_title": "Planning<br><span>performance calibration sessions</span>", "hero_sub": "This demo presents a scenario distributing participants, managers, and HR partners across sessions. It supports review of workload, composition, and exceptions. Groups are preconfigured; this page does not run an optimizer or assess employee performance.", "sessions_sub": "Illustrative distribution of participants and session roles", "rules_title": "Reference rules and scenario exceptions", "footer_title": "Explore my People experience", "footer_sub": "I developed a calibration planning POC and structured region-specific business rules. I am interested in People Analytics, Talent Operations, and Talent Acquisition opportunities.", "footer_cta": "Connect on LinkedIn \u2192", "scope_sub": "Participants and HR partners in the fictional data shown", "legend_exception_desc": "Session flagged as an exception in the illustrative scenario. Not every group meets the minimum limits; the flag makes these cases visible for review."});
+DATA.sessions.forEach(s => {s.people = (s.contributors || []).length; if (s.people < 10 || s.managers.length < 3) { if (!s.tags.includes('exception')) s.tags.push('exception'); }});
+DATA.partners.forEach(p => p.sessions = DATA.sessions.filter(s => s.partner === p.name).length);
+const managerGroups = new Map();
+DATA.sessions.forEach(s=>s.managers.forEach(name=>{if(!managerGroups.has(name)) managerGroups.set(name,{name,cls:s.cls,sessions:0});managerGroups.get(name).sessions++;}));
+DATA.managerLoad = [...managerGroups.values()];
+const participantRows = DATA.sessions.flatMap(s=>s.contributors || []);
+const actualLevels = participantRows.reduce((a,c)=>(a[c.level]=(a[c.level]||0)+1,a),{});
+for (const lang of ['pt','en']) {
+ const L=LANG[lang];
+ const values=[new Set(DATA.sessions.map(s=>s.region)).size,DATA.managerLoad.length,participantRows.length,DATA.sessions.length,DATA.partners.length];
+ L.stats.forEach((s,i)=>s.val=String(values[i]));
+ L.seniority=Object.entries(actualLevels).map(([name,count])=>({name,count,pct:Math.round(count/(participantRows.length||1)*100)}));
+}
+
 let currentLang = 'en';
 
 function t(key) { return LANG[currentLang][key] || key; }
@@ -805,7 +485,7 @@ function escHtml(s) {
 }
 
 function renderAll(lang) {
-  currentLang = lang;
+  currentLang = lang; document.querySelector('.nav-back').href = lang === 'pt' ? 'index.html' : 'index-en.html';
   const L = LANG[lang];
 
   document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
@@ -858,7 +538,7 @@ function renderPartners(L) {
           <div class="partner-region">${escHtml(regLabel(p.region))}</div>
         </div>
       </div>
-      <span class="partner-sessions">${p.sessions} ${p.sessions === 1 ? 'session' : (currentLang === 'pt' ? 'sessões' : 'sessions')}</span>
+      <span class="partner-sessions">${p.sessions} ${currentLang === 'pt' ? (p.sessions === 1 ? 'sessão' : 'sessões') : (p.sessions === 1 ? 'session' : 'sessions')}</span>
     </div>`
   ).join('');
 }
@@ -1011,10 +691,9 @@ function renderLoad(L) {
   ).join('');
 }
 
-function setLang(lang) { renderAll(lang); }
+function setLang(lang) { window.location.href = lang === 'pt' ? 'calibration-demo.html' : 'calibration-demo-en.html'; }
 
 window.addEventListener('DOMContentLoaded', () => renderAll('en'));
 </script>
-
 </body>
 </html>

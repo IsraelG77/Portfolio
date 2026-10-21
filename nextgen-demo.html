@@ -1,529 +1,232 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CI&T NextGen 2026 — Interns Dashboard Demo</title>
-  
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <style>
-    :root {
-      --bg: #0a0f1e;
-      --bg-panel: rgba(255, 255, 255, 0.03);
-      --bg-panel-hover: rgba(255, 255, 255, 0.05);
-      --border: rgba(255, 255, 255, 0.08);
-      --accent: #f472b6;       /* Pink */
-      --accent-grad1: #690037; /* Dark pink/red */
-      --accent-grad2: #8C0049; /* Magenta */
-      --text: #e2e8f0;
-      --text-muted: #94a3b8;
-      
-      --valid: #34d399;
-      --invalid: #ef4444;
-      --highlight: #3b82f6;
-    }
-    
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
-    
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    
-    /* SCROLLBAR */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-    
-    /* HEADER & TABS (Sticky) */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: rgba(10, 15, 30, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem 0;
-    }
-    
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    
-    .header-title h1 {
-      font-size: 1.5rem;
-      background: linear-gradient(90deg, #f472b6, #c084fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 700;
-    }
-    .header-title p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 0.25rem;
-    }
-    
-    .tabs {
-      display: flex;
-      gap: 2rem;
-    }
-    .tab-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      font-weight: 500;
-      padding: 0.75rem 0;
-      cursor: pointer;
-      position: relative;
-      transition: color 0.3s ease;
-    }
-    .tab-btn:hover { color: var(--text); }
-    .tab-btn.active { color: var(--accent); }
-    .tab-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 2px;
-      background: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
-      border-radius: 2px 2px 0 0;
-    }
-    
-    /* MAIN CONTAINER */
-    main { padding: 2rem; max-width: 1400px; margin: 0 auto; }
-    .tab-content { display: none; animation: fadeIn 0.4s ease; }
-    .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    /* GRID SYSTEM */
-    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
-    
-    /* PANELS / CARDS */
-    .panel {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .panel::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-    }
-    
-    .panel-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: #fff;
-      display: flex; align-items: center; gap: 0.5rem;
-    }
-    
-    /* KPIs */
-    .kpi-val { font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
-    .kpi-sub { font-size: 0.8rem; color: var(--text-muted); }
-    .kpi-color-valid { color: var(--valid); }
-    .kpi-color-invalid { color: var(--invalid); }
-    
-    /* DATATABLES DARK MODE OVERRIDES */
-    table.dataTable { border-collapse: collapse !important; }
-    table.dataTable tbody tr { background-color: transparent !important; }
-    table.dataTable tbody tr:hover { background-color: var(--bg-panel-hover) !important; }
-    table.dataTable tbody td, table.dataTable thead th {
-      border-bottom: 1px solid var(--border) !important;
-      color: var(--text) !important;
-    }
-    table.dataTable thead th { font-weight: 600; background: rgba(0,0,0,0.2) !important; border-bottom: 2px solid var(--border) !important;}
-    
-    /* Corrige o texto escuro dos controles nativos da tabela */
-    .dataTables_wrapper .dataTables_length, 
-    .dataTables_wrapper .dataTables_filter, 
-    .dataTables_wrapper .dataTables_info, 
-    .dataTables_wrapper .dataTables_paginate {
-      color: var(--text-muted) !important;
-      margin-bottom: 1rem;
-    }
-    .dataTables_wrapper .dataTables_filter input, .dataTables_wrapper .dataTables_length select {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 4px;
-      border-radius: 4px;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button { 
-      color: var(--text) !important; 
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-      background: var(--accent) !important;
-      color: #fff !important;
-      border: none !important;
-    }
-    
-    /* HEATMAP */
-    .heatmap-grid {
-      display: grid;
-      grid-template-columns: auto repeat(5, 1fr);
-      gap: 2px;
-      margin-top: 1rem;
-    }
-    .heatmap-cell {
-      padding: 1rem 0.5rem;
-      text-align: center;
-      background: rgba(255,255,255,0.02);
-      border-radius: 4px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: transform 0.2s;
-    }
-    .heatmap-cell:hover { transform: scale(1.05); z-index: 10; cursor: default; }
-    .heatmap-header { background: rgba(0,0,0,0.3); font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem; text-align: center; border-radius: 4px;}
-    .heatmap-y-label { display: flex; align-items: center; justify-content: flex-end; padding-right: 1rem; font-size: 0.8rem; color: var(--text-muted); border-radius: 4px;}
-    
-    /* FUNNEL */
-    .funnel-container {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    .funnel-step {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .funnel-label { width: 140px; font-size: 0.85rem; color: var(--text-muted); text-align: right; }
-    .funnel-bar-wrapper { flex: 1; height: 28px; background: rgba(0,0,0,0.3); border-radius: 14px; overflow: hidden; position: relative; }
-    .funnel-bar { height: 100%; border-radius: 14px; display: flex; align-items: center; padding: 0 1rem; font-size: 0.8rem; font-weight: 600; background: linear-gradient(90deg, var(--accent-grad1), var(--accent-grad2)); transition: width 1s ease; }
-    .funnel-val { width: 60px; font-weight: 600; text-align: left; }
-    
-    /* FILTERS */
-    .filters-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      background: var(--bg-panel);
-      padding: 1rem;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-    .filter-group { display: flex; flex-direction: column; gap: 0.35rem; }
-    .filter-group label { font-size: 0.75rem; color: var(--text-muted); }
-    .filter-group select {
-      background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: #fff;
-      padding: 0.4rem 0.8rem; border-radius: 6px; outline: none; font-family: inherit;
-    }
-    
-    /* PROGRESS BARS (D&I) */
-    .di-row { margin-bottom: 1rem; }
-    .di-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.25rem; }
-    .di-bar-track { height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
-    .di-bar-fill { height: 100%; border-radius: 4px; }
-    
-    /* STATUS PILLS */
-    .status-pill {
-      padding: 0.25rem 0.6rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .pill-green { background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3);}
-    .pill-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);}
-    .pill-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);}
-    .pill-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);}
-    .pill-gray { background: rgba(255, 255, 255, 0.1); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.2);}
-    
-    /* RESPONSIVE */
-    @media (max-width: 1024px) {
-      .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 768px) {
-      .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-      .tabs { display: none; /* Tabs collapse em mobile numa solução real, aqui só ocultamos para a demo ideal em Desktop */ }
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Next Gen | Demonstração de análise de recrutamento</title>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,400i&amp;f[]=general-sans@400,500,600&amp;display=swap">
+<link rel="stylesheet" href="assets/demo.css">
+<meta name="theme-color" content="#f6f4ef">
+<meta name="robots" content="noindex">
 </head>
-<body>
+<body class="ng">
+<header class="dnav"><div class="wrap"><a class="dnav-back nav-back" href="index.html"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Voltar ao portfólio</span></a><span class="dnav-brand">Next Gen — Análise de recrutamento</span><div class="dnav-right"><div class="lang"><a id="btn-pt" class="lang-btn" href="nextgen-demo.html" hreflang="pt-BR" aria-current="page">PT</a><span aria-hidden="true">/</span><a id="btn-en" class="lang-btn" href="nextgen-demo-en.html" hreflang="en">EN</a></div></div></div></header><section class="dintro"><div class="wrap"><p class="deyebrow">Demo · Dados fictícios · Seleção de estágio</p><h1>Next Gen: acompanhamento de <em>17.500+ candidaturas</em> por etapa</h1><p class="dlede">Minha atuação no projeto real: condução de ponta a ponta da seleção de estágio Next Gen e desenvolvimento da base automatizada de análise. O programa recebeu mais de 17.500 candidaturas, com redução de 90% no tempo de análise. Esta demo usa uma base separada de 300 candidaturas fictícias para demonstrar a interface. Notas, distribuições demográficas e resultados são simulados e não descrevem candidatos reais.</p><div class="tabs" role="tablist">
+<button class="tab-btn active" data-target="tab-overview">Visão geral</button>
+<button class="tab-btn" data-target="tab-assessments">Avaliações</button>
+<button class="tab-btn" data-target="tab-correlation">Notas das avaliações</button>
+<button class="tab-btn" data-target="tab-diversity">Análise de D&amp;I</button>
+<button class="tab-btn" data-target="tab-report">Dados de candidaturas</button>
+</div></div></section>
+<main class="wrap">
+<!-- TAB 1: OVERVIEW -->
+<div class="tab-content active" id="tab-overview">
+<div class="grid-4">
+<div class="panel">
+<div class="panel-title">Total de candidaturas</div>
+<div class="kpi-val" id="kpi-total">0</div>
+<div class="kpi-sub">Candidaturas fictícias</div>
+</div>
+<div class="panel">
+<div class="panel-title">Candidaturas válidas</div>
+<div class="kpi-val kpi-color-valid" id="kpi-valid">0</div>
+<div class="kpi-sub" id="kpi-valid-sub">0% de taxa de validade</div>
+</div>
+<div class="panel">
+<div class="panel-title">Candidaturas inválidas</div>
+<div class="kpi-val kpi-color-invalid" id="kpi-invalid">0</div>
+<div class="kpi-sub">Elegibilidade, duplicidades ou dados incompletos</div>
+</div>
+<div class="panel">
+<div class="panel-title">Ofertas na simulação</div>
+<div id="kpi-approved-final" class="kpi-val kpi-color-accent">0</div>
+<div class="kpi-sub">Resultado ilustrativo de oferta</div>
+</div>
+</div>
+<div class="grid-2">
+<div class="panel">
+<div class="panel-title">Funil de conversão</div>
+<p class="panel-desc">Volumes e conversão entre etapas para acompanhar o processo seletivo. Os números desta demonstração são fictícios.</p>
+<div class="funnel-container" id="funnel-chart-container">
+<!-- Renderizado via JS -->
+</div>
+</div>
+<div class="panel">
+<div class="panel-title">Motivos de invalidação</div>
+<div class="chart-box">
+<canvas id="invalidChart"></canvas>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 2: ASSESSMENTS -->
+<div class="tab-content" id="tab-assessments">
+<div class="grid-4" id="assessment-status-cards">
+<!-- Renderizado via JS -->
+</div>
+<div class="panel">
+<div class="panel-title">Distribuição das avaliações (Mindsight × Voxy)</div>
+<p class="panel-desc">Distribuição dos resultados dos testes de avaliação situacional e idioma. Inclui apenas candidaturas válidas com ambos os testes concluídos.</p>
+<div id="matrix-container" style="overflow-x:auto">
+<!-- Heatmap renderizado via JS -->
+</div>
+</div>
+</div>
+<!-- TAB 3: CORRELATION -->
+<div class="tab-content" id="tab-correlation">
+<div class="panel">
+<div class="panel-title">Notas de avaliação técnica e comportamental</div>
+<p class="panel-desc">Compara notas técnica e comportamental das candidaturas válidas que concluíram ambos os testes. As cores indicam oferta ou pertencimento ao agrupamento de diversidade da simulação. A visualização não comprova validade dos testes nem redução de vieses.</p>
+<div style="margin-bottom:1.25rem">
+<button id="toggle-scatter-di" class="dbtn">
+Alternar visão: oferta / grupos de diversidade</button>
+</div>
+<div class="chart-box" style="height:440px">
+<canvas id="scatterChart"></canvas>
+</div>
+</div>
+</div>
+<!-- TAB 4: D&I -->
+<div class="tab-content" id="tab-diversity">
+<div class="grid-3" id="di-bars-container">
+<!-- Barras de gênero, raça, pcd Renderizadas via JS -->
+</div>
+<div class="panel">
+<div class="panel-title">Representação dos grupos em cada etapa</div>
+<p class="panel-desc">Percentual de participantes incluídos no agrupamento de diversidade em cada etapa, calculado sobre o total daquela etapa — não é uma taxa de sobrevivência ou avanço. Na simulação, o agrupamento reúne mulheres, pessoas pretas/pardas e pessoas com deficiência, sem contagem duplicada. A análise pode levantar questões para investigação; não garante ausência de viés.</p>
+<div class="chart-box" style="height:360px">
+<canvas id="diFunnelChart"></canvas>
+</div>
+</div>
+</div>
+<!-- TAB 5: DATA REPORT -->
+<div class="tab-content" id="tab-report">
+<div class="filters-bar" id="report-filters">
+<!-- Dropdowns renderizados via JS -->
+</div>
+<div class="panel">
+<div class="table-head">
+<div class="panel-title">Candidaturas e filtros</div>
+<button id="btn-export" class="dbtn dbtn-primary">
+Exportar CSV filtrado</button>
+</div>
+<div class="table-scroll">
+<table id="dataTable">
+<thead>
+<tr>
+<th>Nome Fictício</th>
+<th>Estado</th>
+<th>Status Triagem</th>
+<th>Motivo Inv.</th>
+<th>Mindsight</th>
+<th>Voxy</th>
+<th>Nota técnica</th>
+<th>Nota comportamental</th>
+<th>Incluído no indicador de grupo?</th>
+<th>Fase 1</th>
+<th>Oferta Final</th>
+</tr>
+</thead>
+<tbody>
+<!-- Inject via JS -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main><footer class="dfoot"><div class="wrap"><span>Israel Gilbernon · Demonstração com dados fictícios</span><a href="https://www.linkedin.com/in/gilbernon" target="_blank" rel="noopener">LinkedIn</a></div></footer>
+<script>const EN=false;
+const L={"valid": "Válido", "invalid": "Inválido", "passed": "Aprovado", "notpassed": "Reprovado", "offer": "Oferta", "nooffer": "Sem oferta", "na": "N/D", "woman": "Mulher", "man": "Homem", "other": "Prefere não informar/Não-Binário", "black": "Preto/Pardo", "white": "Branco", "yes": "Sim", "no": "Não", "all": "Todas as candidaturas", "eligible": "Candidaturas válidas", "both": "Ambos os testes concluídos", "shortlist": "Aprovação na etapa 1", "offers": "Oferta na simulação", "validrate": "% válidas", "conversion": "de conversão", "testboth": "Ambos concluídos", "mindonly": "Só Mindsight", "voxyonly": "Só Voxy", "neither": "Nenhum concluído", "group": "Incluído no agrupamento", "others": "Demais participantes", "offeryes": "Oferta na simulação", "offerno": "Sem oferta na simulação", "tech": "Nota técnica (%)", "behavior": "Nota comportamental (até 10)", "gender": "Gênero · candidaturas válidas", "race": "Raça · categorias brasileiras", "disability": "Deficiência · candidaturas válidas", "otherlabel": "Não binário / não informado", "blacklabel": "Preto/Pardo", "grouppercent": "Participação do agrupamento no total de cada etapa (%)", "status": "Status de triagem", "state": "Estado", "mind": "Resultado Mindsight", "stage": "Etapa 1", "outcome": "Resultado de oferta", "allrecords": "Todos os registros", "search": "Buscar por nome, ID ou qualquer campo", "prev": "Anterior", "next": "Próxima", "showing": "registros", "export": "Nome_Ficticio,Estado,Status_Triagem,Motivo_Invalidacao,Mindsight,Voxy,Nota_Tecnica,Nota_Comportamental,Indicador_Grupo,Fase1,Oferta", "groupview": "Visão atual: agrupamento de diversidade", "offerview": "Visão atual: resultado de oferta"};
+let demoSeed = 2026; function demoRandom(){ demoSeed = (Math.imul(1664525, demoSeed) + 1013904223) >>> 0; return demoSeed / 4294967296; }
 
-  <header>
-    <div class="header-top">
-      <div class="header-title">
-        <h1><i class="fas fa-layer-group"></i> CI&T NextGen 2026 — Analytics</h1>
-        <p>Demo Interativa • Dados 100% Fictícios (Client-side) • Lógica Baseada em Thresholds Reais</p>
-      </div>
-      <div style="display: flex; gap: 1.5rem; align-items: center;">
-        <div style="display: flex; gap: 0.5rem; align-items: center; font-size: 0.85rem; font-weight: 700;">
-          <a href="nextgen-demo.html" style="color: #fff; text-shadow: 0 0 10px rgba(244, 114, 182, 0.8); text-decoration: none;">PT</a>
-          <span style="color: var(--border); font-weight: 400;">|</span>
-          <a href="nextgen-demo-en.html" style="color: var(--text-muted); text-decoration: none; transition: 0.3s;">EN</a>
-        </div>
-        <a href="index.html" style="color:var(--text); text-decoration:none; font-size:0.9rem; border:1px solid var(--border); padding:0.5rem 1rem; border-radius:8px; transition: 0.3s; background: rgba(255,255,255,0.05);" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
-          <i class="fas fa-arrow-left"></i> Voltar ao Portfolio
-        </a>
-      </div>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn active" data-target="tab-overview">Overview</button>
-      <button class="tab-btn" data-target="tab-assessments">Assessments</button>
-      <button class="tab-btn" data-target="tab-correlation">Score Correlation</button>
-      <button class="tab-btn" data-target="tab-diversity">D&I Analytics</button>
-      <button class="tab-btn" data-target="tab-report">Data Report</button>
-    </div>
-  </header>
 
-  <main>
-    <!-- TAB 1: OVERVIEW -->
-    <div id="tab-overview" class="tab-content active">
-      <div class="grid-4">
-        <div class="panel">
-          <div class="panel-title"><i class="fas fa-users"></i> Pipeline Total</div>
-          <div class="kpi-val" id="kpi-total">0</div>
-          <div class="kpi-sub">Candidatos inscritos</div>
-        </div>
-        <div class="panel">
-          <div class="panel-title"><i class="fas fa-check-circle"></i> Status Válido</div>
-          <div class="kpi-val kpi-color-valid" id="kpi-valid">0</div>
-          <div class="kpi-sub" id="kpi-valid-sub">0% de taxa de validade</div>
-        </div>
-        <div class="panel">
-          <div class="panel-title"><i class="fas fa-times-circle"></i> Triagem Automática</div>
-          <div class="kpi-val kpi-color-invalid" id="kpi-invalid">0</div>
-          <div class="kpi-sub">Barrados (Elegibilidade/Duplicata)</div>
-        </div>
-        <div class="panel">
-          <div class="panel-title"><i class="fas fa-flag-checkered"></i> Aprovados Finais</div>
-          <div class="kpi-val" style="color: var(--accent);" id="kpi-approved-final">0</div>
-          <div class="kpi-sub">Na janela de alocação</div>
-        </div>
-      </div>
 
-      <div class="grid-2">
-        <div class="panel">
-          <div class="panel-title"><i class="fas fa-filter"></i> Funil de Conversão</div>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-            Leitura orientada a conversão entre etapas para dimensionamento da capacidade operacional em HR.
-          </p>
-          <div class="funnel-container" id="funnel-chart-container">
-            <!-- Renderizado via JS -->
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-title"><i class="fas fa-ban"></i> Motivos de Invalidação (Top)</div>
-          <div style="height: 250px; position: relative;">
-            <canvas id="invalidChart"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- TAB 2: ASSESSMENTS -->
-    <div id="tab-assessments" class="tab-content">
-      <div class="grid-4" id="assessment-status-cards">
-        <!-- Renderizado via JS -->
-      </div>
-      
-      <div class="panel">
-        <div class="panel-title"><i class="fas fa-chess-board"></i> Heatmap de Nivelamento (Mindsight × Voxy)</div>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
-          Lógica de Negócio: Exibe a concentração populacional com base em testes situacionais e fluência em idioma. 
-          Apenas candidatos com <strong>Status Válido</strong> e que finalizaram ambos os testes são plotados, permitindo identificar densidade e perfis outlier.
-        </p>
-        <div id="matrix-container" style="overflow-x: auto;">
-          <!-- Heatmap renderizado via JS -->
-        </div>
-      </div>
-    </div>
 
-    <!-- TAB 3: CORRELATION -->
-    <div id="tab-correlation" class="tab-content">
-      <div class="panel">
-        <div class="panel-title"><i class="fas fa-project-diagram"></i> Qualificação × Match Cultural (Aprovados 1ª Fase)</div>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
-          Lógica de Negócio: Identificação de perfis para avanço final (Approval Zone). O eixo Y traz o fit avaliado (Digaí Score) e o eixo X o agregado de skill técnico (Qualified Score). Auxilia na redução de viés ao calibrar a decisão entre nota técnica e perfil comportamental.
-        </p>
-        <div style="margin-bottom: 1rem;">
-          <button id="toggle-scatter-di" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s;">
-            <i class="fas fa-palette"></i> Alterar Visão: Geral vs Grupos Minoritários
-          </button>
-        </div>
-        <div style="height: 450px; position: relative; background: rgba(0,0,0,0.1); border-radius: 8px; padding: 10px;">
-          <canvas id="scatterChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 4: D&I -->
-    <div id="tab-diversity" class="tab-content">
-      <div class="grid-3" id="di-bars-container">
-        <!-- Barras de gênero, raça, pcd Renderizadas via JS -->
-      </div>
-      <div class="panel">
-        <div class="panel-title"><i class="fas fa-chart-line"></i> Evolução de Grupos Minoritários no Funil (Survival Rate)</div>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
-          Lógica de Negócio: Acompanhamento da taxa de sobrevivência (Survival Rate) de grupos sub-representados em cada fase (Candidatos Múltiplos), para garantir que as etapas de assessment e critérios de corte não causem viés de exclusão sistêmica.
-        </p>
-        <div style="height: 350px;">
-          <canvas id="diFunnelChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 5: DATA REPORT -->
-    <div id="tab-report" class="tab-content">
-      
-      <div class="filters-bar" id="report-filters">
-        <!-- Dropdowns renderizados via JS -->
-      </div>
-
-      <div class="panel" style="padding: 1.5rem;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-          <div class="panel-title" style="margin:0;"><i class="fas fa-table"></i> Detalhamento Analítico / Tabela Dinâmica</div>
-          <button id="btn-export" style="background: linear-gradient(90deg, var(--accent-grad1), var(--accent-grad2)); border: none; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 4px 12px rgba(105, 0, 55, 0.4);">
-            <i class="fas fa-download"></i> Exportar Custom CSV
-          </button>
-        </div>
-        <div style="overflow-x: auto;">
-          <table id="dataTable" class="display nowrap" style="width:100%; font-size: 0.85rem;">
-            <thead>
-              <tr>
-                <th>Nome Fictício</th>
-                <th>Estado</th>
-                <th>Status Triagem</th>
-                <th>Motivo Inv.</th>
-                <th>Mindsight</th>
-                <th>Voxy</th>
-                <th>Qualified</th>
-                <th>Digaí Score</th>
-                <th>Minoria?</th>
-                <th>Fase 1</th>
-                <th>Oferta Final</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Inject via JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <script>
-    // ==========================================
-    // 1. DATA GENERATION LOGIC (MOCKING ENGINE)
-    // ==========================================
-    // Lógica construída totalmente para gerar uma demo funcional offline no Portfólio, 
-    // replicando a arquitetura decisória da aplicação original sem violar dados privados.
     
     const states = ['SP','RJ','MG','RS','PR','SC','BA','PE','CE', 'GO'];
-    const invalidReasons = ['Incompleto', 'Fora do Perfil/Idade Máx', 'Duplicidade de Cadastro', 'Sem vínculo acadêmico'];
+    const invalidReasons = ['Incompleto', 'Requisitos de elegibilidade não atendidos', 'Duplicidade de cadastro', 'Sem vínculo acadêmico'];
     const mindSights = ['Inferior', 'Médio Inferior', 'Médio', 'Médio Superior', 'Superior'];
     const voxyLevels = ['N/D', 'A1', 'A2', 'B1', 'B2', 'C1'];
 
-    // Gerador determinístico de Mock com distribuição controlada para manter UX realista.
     function generateMockData(count = 300) {
       const data = [];
       for(let i=0; i<count; i++) {
         const id = (1000 + i).toString();
-        
-        // Regra de Negócio: ~75% válido
-        const isValid = Math.random() < 0.75;
+
+        const isValid = demoRandom() < 0.75;
         const validStatus = isValid ? 'Válido' : 'Inválido';
-        const invalidReason = isValid ? '-' : invalidReasons[Math.floor(Math.random() * invalidReasons.length)];
+        const invalidReason = isValid ? '-' : invalidReasons[Math.floor(demoRandom() * invalidReasons.length)];
         
         let mIdx = 0, vIdx = 0;
         let testedBoth = false;
         
         if (isValid) {
-          const randTest = Math.random();
+          const randTest = demoRandom();
           if (randTest < 0.60) {
-            // Testou ambos (~60% reais)
-            mIdx = Math.floor(Math.random() * mindSights.length);
-            vIdx = Math.floor(Math.random() * (voxyLevels.length - 1)) + 1; // 1 a 5
+
+            mIdx = Math.floor(demoRandom() * mindSights.length);
+            vIdx = Math.floor(demoRandom() * (voxyLevels.length - 1)) + 1; // 1 a 5
             testedBoth = true;
           } else if (randTest < 0.75) {
-            // Só Mindsight
-            mIdx = Math.floor(Math.random() * mindSights.length);
+
+            mIdx = Math.floor(demoRandom() * mindSights.length);
             vIdx = 0;
           } else if (randTest < 0.85) {
-            // Só Voxy
+
             mIdx = -1; 
-            vIdx = Math.floor(Math.random() * (voxyLevels.length - 1)) + 1;
+            vIdx = Math.floor(demoRandom() * (voxyLevels.length - 1)) + 1;
           } else {
-            // Nenhum finalizado (Drop)
+
             mIdx = -1;
             vIdx = 0;
           }
         } else {
-          mIdx = Math.random() < 0.2 ? Math.floor(Math.random() * 3) : -1;
-          vIdx = Math.random() < 0.2 ? Math.floor(Math.random() * 2) : 0;
+          mIdx = demoRandom() < 0.2 ? Math.floor(demoRandom() * 3) : -1;
+          vIdx = demoRandom() < 0.2 ? Math.floor(demoRandom() * 2) : 0;
         }
 
         const msVal = (mIdx === -1) ? 'N/D' : mindSights[mIdx];
         const voxVal = voxyLevels[vIdx];
 
-        // Scores Aleatórios para Gráfico de Dispersão
         let qualScore = 0;
         let digScore = 0;
         if (isValid && testedBoth) {
-          // Normalização para dar aspecto real de correlação
+
           const base = 45 + (mIdx * 8); 
-          qualScore = Math.min(100, Math.max(30, Math.floor(base + (Math.random() * 30 - 15))));
-          digScore = (Math.random() * 4 + 6).toFixed(1); // 6.0 a 10.0
+          qualScore = Math.min(100, Math.max(30, Math.floor(base + (demoRandom() * 30 - 15))));
+          digScore = (demoRandom() * 4 + 6).toFixed(1); // 6.0 a 10.0
         }
 
-        // --- thresholds do funil de aprovação ---
         let passPhase1 = false;
         let passPhase2 = false;
 
-        // Fase 1 Aprov: Válido + QualScore > 50 + DigScore > 6.5
         if (isValid && qualScore >= 52 && parseFloat(digScore) >= 6.8) {
           passPhase1 = true;
         }
-        
-        // Ajuste random para garantir volume para visuais
-        if (isValid && testedBoth && !passPhase1 && Math.random() < 0.15) passPhase1 = true; 
+
+        if (isValid && testedBoth && !passPhase1 && demoRandom() < 0.15) passPhase1 = true; 
 
         if (passPhase1) {
-          // Fase 2 Aprov: Melhores performances comportamentais
-          if (qualScore > 65 && parseFloat(digScore) > 7.5 && Math.random() < 0.7) {
+
+          if (qualScore > 65 && parseFloat(digScore) > 7.5 && demoRandom() < 0.7) {
             passPhase2 = true;
-          } else if (Math.random() < 0.4) {
+          } else if (demoRandom() < 0.4) {
              passPhase2 = true;
           }
         }
 
-        // Mock D&I (Diversidade)
-        const gender = Math.random() < 0.45 ? 'Mulher' : (Math.random() < 0.95 ? 'Homem' : 'Prefere não informar/Não-Binário');
-        const isBlack = Math.random() < 0.42; 
+        const gender = demoRandom() < 0.45 ? 'Mulher' : (demoRandom() < 0.95 ? 'Homem' : 'Prefere não informar/Não-Binário');
+        const isBlack = demoRandom() < 0.42; 
         const race = isBlack ? 'Preto/Pardo' : 'Branco';
-        const isPCD = Math.random() < 0.04; 
+        const isPCD = demoRandom() < 0.04; 
         const isMinority = (gender === 'Mulher') || isBlack || isPCD;
 
         data.push({
           id: id,
-          name: `Candidate Mocked #${id}`,
-          state: states[Math.floor(Math.random() * states.length)],
+          name: `Candidatura fictícia #${id}`,
+          state: states[Math.floor(demoRandom() * states.length)],
           validStatus: validStatus,
           invalidReason: invalidReason,
           mindsight: msVal,
@@ -535,7 +238,7 @@
           pcd: isPCD ? 'Sim' : 'Não',
           isMinority: isMinority,
           phase1: passPhase1 ? 'Aprovado' : (isValid ? 'Reprovado' : '-'),
-          phase2: passPhase2 ? 'Oferta' : (passPhase1 ? 'No Offer' : '-')
+          phase2: passPhase2 ? 'Oferta' : (passPhase1 ? 'Sem oferta' : '-')
         });
       }
       return data;
@@ -543,350 +246,51 @@
 
     const dataSource = generateMockData(300);
 
-    // ==========================================
-    // 2. TAB NAVIGATION LOGIC (Vanilla JS)
-    // ==========================================
-    $('.tab-btn').on('click', function() {
-      $('.tab-btn').removeClass('active');
-      $(this).addClass('active');
-      
-      $('.tab-content').removeClass('active');
-      $('#' + $(this).data('target')).addClass('active');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $id=id=>document.getElementById(id);
+const valid=dataSource.filter(d=>d.validStatus===L.valid), invalid=dataSource.filter(d=>d.validStatus===L.invalid);
+const both=valid.filter(d=>d.mindsight!==L.na&&d.voxy!==L.na), p1=valid.filter(d=>d.phase1===L.passed), p2=p1.filter(d=>d.phase2===L.offer);
+const steps=[{l:L.all,a:dataSource},{l:L.eligible,a:valid},{l:L.both,a:both},{l:L.shortlist,a:p1},{l:L.offers,a:p2}];
+$id('kpi-total').textContent=dataSource.length;$id('kpi-valid').textContent=valid.length;$id('kpi-valid-sub').textContent=Math.round(valid.length/dataSource.length*100)+L.validrate;$id('kpi-invalid').textContent=invalid.length;$id('kpi-approved-final').textContent=p2.length;
+$id('funnel-chart-container').innerHTML=steps.map((s,i)=>`<div class="funnel-step"><div class="funnel-label">${esc(s.l)}<br><small>${i?Math.round(s.a.length/(steps[i-1].a.length||1)*100)+'% '+L.conversion:''}</small></div><div class="funnel-bar-wrapper"><div class="funnel-bar" style="width:${s.a.length/dataSource.length*100}%"></div></div><div class="funnel-val">${s.a.length}</div></div>`).join('');
+function svgReplace(id,content,label){const el=$id(id);el.outerHTML=`<svg id="${id}" viewBox="0 0 800 360" role="img" aria-label="${esc(label)}" style="width:100%;height:100%;font:13px 'General Sans',Arial,sans-serif;overflow:visible">${content}</svg>`;}
+const invCounts={};invalid.forEach(d=>invCounts[d.invalidReason]=(invCounts[d.invalidReason]||0)+1);
+const invMax=Math.max(1,...Object.values(invCounts));$id('invalidChart').outerHTML='<div id="invalidChart" role="img" aria-label="'+esc(L.invalid)+'">'+Object.entries(invCounts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="di-row"><div class="di-label"><span>${esc(k)}</span><span>${v}</span></div><div class="di-bar-track"><div class="di-bar-fill" style="width:${v/invMax*100}%;background:#a6423a"></div></div></div>`).join('')+'</div>';
+const counts=[both.length,valid.filter(d=>d.mindsight!==L.na&&d.voxy===L.na).length,valid.filter(d=>d.mindsight===L.na&&d.voxy!==L.na).length,valid.filter(d=>d.mindsight===L.na&&d.voxy===L.na).length];
+$id('assessment-status-cards').innerHTML=[L.testboth,L.mindonly,L.voxyonly,L.neither].map((t,i)=>`<div class="panel status-card"><div style="font-family:var(--font-display);font-size:2rem;line-height:1;margin-bottom:.4rem;color:#23466e">${counts[i]}</div><div>${esc(t)}</div></div>`).join('');
+let heat='<div class="heatmap-grid"><div></div>'+['A1','A2','B1','B2','C1'].map(v=>`<div class="heatmap-header">${v}</div>`).join('');
+[...mindSights].reverse().forEach(m=>{heat+=`<div class="heatmap-y-label">${esc(m)}</div>`;['A1','A2','B1','B2','C1'].forEach(v=>{const n=both.filter(d=>d.mindsight===m&&d.voxy===v).length;heat+=`<div class="heatmap-cell" title="${esc(m)} / ${v}: ${n}" style="background:rgba(35,70,110,${Math.max(.05,Math.min(1,n/12))});color:${n/12>.5?'#fff':'#1d2230'}">${n}</div>`;});});$id('matrix-container').innerHTML=heat+'</div>';
+let groupView=false;
+function scatter(){let c='<line x1="75" y1="300" x2="760" y2="300" stroke="#8c8f99"/><line x1="75" y1="20" x2="75" y2="300" stroke="#8c8f99"/>';
+for(let x=30;x<=100;x+=10){let xx=75+(x-30)/70*680;c+=`<text x="${xx}" y="320" text-anchor="middle" fill="#6b7080">${x}</text><line x1="${xx}" y1="20" x2="${xx}" y2="300" stroke="#1d223014"/>`;}
+for(let y=6;y<=10;y++){let yy=300-(y-5)/5.5*270;c+=`<text x="60" y="${yy}" text-anchor="end" fill="#6b7080">${y}</text>`;}
+both.forEach(d=>{let x=75+(Number(d.qualified)-30)/70*680,y=300-(Number(d.digai)-5)/5.5*270;let high=groupView?d.isMinority:d.phase2===L.offer;c+=`<circle cx="${x}" cy="${y}" r="5" fill="${high?(groupView?'#23466e':'#2f6f5e'):'#c3beb2'}" opacity=".8"><title>${esc(d.name)} · ${esc(L.tech)}: ${d.qualified} · ${esc(L.behavior)}: ${d.digai} · ${esc(high?(groupView?L.group:L.offeryes):(groupView?L.others:L.offerno))}</title></circle>`;});
+c+=`<text x="400" y="350" text-anchor="middle" fill="#4a5163">${esc(L.tech)}</text><text transform="translate(18,180) rotate(-90)" text-anchor="middle" fill="#4a5163">${esc(L.behavior)}</text>`;
+if($id('scatterChart').tagName.toLowerCase()==='svg'){$id('scatterChart').innerHTML=c;}else svgReplace('scatterChart',c,L.tech+' / '+L.behavior);
+$id('toggle-scatter-di').textContent=groupView?L.groupview:L.offerview;
+}
+scatter();$id('toggle-scatter-di').addEventListener('click',()=>{groupView=!groupView;scatter();});
+function bars(title,items){let n=items.reduce((a,x)=>a+x[1],0);return `<div class="panel"><h2 class="panel-title">${esc(title)}</h2>`+items.map(([label,count],i)=>`<div class="di-row"><div class="di-label"><span>${esc(label)}</span><span>${Math.round(count/(n||1)*100)}% (${count})</span></div><div class="di-bar-track"><div class="di-bar-fill" style="width:${count/(n||1)*100}%;background:${['#23466e','#8aa1bd','#c3beb2'][i%3]}"></div></div></div>`).join('')+'</div>';}
+$id('di-bars-container').innerHTML=bars(L.gender,[[L.woman,valid.filter(d=>d.gender===L.woman).length],[L.man,valid.filter(d=>d.gender===L.man).length],[L.otherlabel,valid.filter(d=>d.gender===L.other).length]])+bars(L.race,[[L.blacklabel,valid.filter(d=>d.race===L.black).length],[L.white,valid.filter(d=>d.race===L.white).length]])+bars(L.disability,[[L.yes,valid.filter(d=>d.pcd===L.yes).length],[L.no,valid.filter(d=>d.pcd===L.no).length]]);
+const proportions=steps.map(s=>s.a.filter(d=>d.isMinority).length/(s.a.length||1)*100);
+let line='';for(let y=0;y<=100;y+=25)line+=`<text x="55" y="${300-y*2.4}" text-anchor="end" fill="#6b7080">${y}%</text><line x1="65" y1="${300-y*2.4}" x2="760" y2="${300-y*2.4}" stroke="#1d22301f"/>`;
+line+=`<polyline points="${proportions.map((v,i)=>`${90+i*160},${300-v*2.4}`).join(' ')}" fill="none" stroke="#23466e" stroke-width="3"/>`;
+proportions.forEach((v,i)=>line+=`<circle cx="${90+i*160}" cy="${300-v*2.4}" r="6" fill="#23466e"><title>${esc(steps[i].l)}: ${v.toFixed(1)}%</title></circle><text x="${90+i*160}" y="${285-v*2.4}" text-anchor="middle" fill="#1d2230">${v.toFixed(1)}%</text><text x="${90+i*160}" y="330" text-anchor="middle" fill="#6b7080">${i+1}</text>`);
+line+=`<text x="400" y="355" text-anchor="middle" fill="#4a5163">${esc(L.grouppercent)}</text>`;svgReplace('diFunnelChart',line,L.grouppercent);
+const filters=[{key:'validStatus',label:L.status,opts:[L.valid,L.invalid]},{key:'state',label:L.state,opts:states},{key:'mindsight',label:L.mind,opts:mindSights},{key:'phase1',label:L.stage,opts:[L.passed,L.notpassed]},{key:'phase2',label:L.outcome,opts:[L.offer,L.nooffer]}];
+$id('report-filters').innerHTML=filters.map((f,i)=>`<div class="filter-group"><label for="filter-${i}">${esc(f.label)}</label><select id="filter-${i}"><option value="">${esc(L.allrecords)}</option>${f.opts.map(o=>`<option>${esc(o)}</option>`).join('')}</select></div>`).join('')+`<div class="filter-group"><label for="table-search">${esc(L.search)}</label><input id="table-search" type="search" ></div>`;
+const pager=document.createElement('div');pager.className='pager';pager.innerHTML=`<button id="prev-page">${esc(L.prev)}</button><span id="page-info"></span><button id="next-page">${esc(L.next)}</button>`;$id('dataTable').parentNode.appendChild(pager);
+let pageIndex=0,filtered=[...dataSource];const pageSize=20;
+function rowValues(d){return [d.name,d.state,d.validStatus,d.invalidReason,d.mindsight,d.voxy,Number(d.qualified)>0?d.qualified:'-',Number(d.digai)>0?d.digai:'-',d.isMinority?L.yes:L.no,d.phase1,d.phase2];}
 
-      // Dispara resize para os canvas ajustarem width automaticamente (fix bug chartjs escondido)
-      window.dispatchEvent(new Event('resize'));
-    });
+let sortColumn=-1,sortAscending=true;
+function applySort(){if(sortColumn<0)return;filtered.sort((a,b)=>{const x=rowValues(a)[sortColumn],y=rowValues(b)[sortColumn];const nx=Number(x),ny=Number(y);const cmp=(x!=='-'&&y!=='-'&&x!==''&&y!==''&&Number.isFinite(nx)&&Number.isFinite(ny))?nx-ny:String(x).localeCompare(String(y),EN?'en':'pt-BR',{numeric:true});return sortAscending?cmp:-cmp;});}
+document.querySelectorAll('#dataTable th').forEach((th,i)=>{th.tabIndex=0;th.style.cursor='pointer';th.setAttribute('aria-sort','none');const sort=()=>{sortAscending=sortColumn===i?!sortAscending:true;sortColumn=i;document.querySelectorAll('#dataTable th').forEach(t=>t.setAttribute('aria-sort','none'));th.setAttribute('aria-sort',sortAscending?'ascending':'descending');pageIndex=0;renderTable();};th.addEventListener('click',sort);th.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();sort();}});});
 
-    // ==========================================
-    // 3. UI RENDERING & DATA BINDING
-    // ==========================================
-    
-    function initDashboard() {
-      
-      // ----------- A) OVERVIEW TAB ----------- 
-      const total = dataSource.length;
-      const validos = dataSource.filter(d => d.validStatus === 'Válido');
-      const invalidos = dataSource.filter(d => d.validStatus === 'Inválido');
-      const aprovadosP1 = validos.filter(d => d.phase1 === 'Aprovado');
-      const aprovadosP2 = aprovadosP1.filter(d => d.phase2 === 'Oferta');
-      const testaramAmbos = validos.filter(d => d.mindsight !== 'N/D' && d.voxy !== 'N/D');
-
-      // Bind KPIs
-      $('#kpi-total').text(total);
-      $('#kpi-valid').text(validos.length);
-      $('#kpi-valid-sub').text(`~${Math.round((validos.length / total) * 100)}% Conversion`);
-      $('#kpi-invalid').text(invalidos.length);
-      $('#kpi-approved-final').text(aprovadosP2.length);
-
-      // Funnel Construction
-      const steps = [
-        { label: 'Pipeline Completo', val: total },
-        { label: 'Elegibilidade (Válidos)', val: validos.length },
-        { label: 'Engajamento (Testaram Ambos)', val: testaramAmbos.length },
-        { label: 'Shortlist (Passed Phase 1)', val: aprovadosP1.length },
-        { label: 'Hired / Offer', val: aprovadosP2.length }
-      ];
-
-      const maxF = steps[0].val;
-      let funnelHTML = '';
-      steps.forEach((s, idx) => {
-        const p = (s.val / maxF) * 100;
-        const conv = idx === 0 ? '' : Math.round((s.val / steps[idx-1].val) * 100) + '% cv.';
-        funnelHTML += `
-          <div class="funnel-step">
-            <div class="funnel-label">${s.label}<br><span style="font-size:0.7rem; color:var(--accent);">${conv}</span></div>
-            <div class="funnel-bar-wrapper">
-              <div class="funnel-bar" style="width: ${Math.max(p, 4)}%"></div>
-            </div>
-            <div class="funnel-val">${s.val}</div>
-          </div>
-        `;
-      });
-      $('#funnel-chart-container').html(funnelHTML);
-
-      // Invalid Reasons Doughnut Chart
-      const invCounts = {};
-      invalidos.forEach(d => { invCounts[d.invalidReason] = (invCounts[d.invalidReason] || 0) + 1; });
-      new Chart(document.getElementById('invalidChart'), {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(invCounts),
-          datasets: [{ data: Object.values(invCounts), backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8C0049'], borderWidth: 0 }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font:{size:11} } } }
-        }
-      });
-
-
-      // ----------- B) ASSESSMENTS TAB ----------- 
-      const soMinds = validos.filter(d => d.mindsight !== 'N/D' && d.voxy === 'N/D').length;
-      const soVoxy = validos.filter(d => d.mindsight === 'N/D' && d.voxy !== 'N/D').length;
-      const nenh = validos.filter(d => d.mindsight === 'N/D' && d.voxy === 'N/D').length;
-
-      $('#assessment-status-cards').html(`
-        <div class="panel" style="text-align:center;">
-          <div style="font-size:2rem; color:var(--valid); font-weight:700;">${testaramAmbos.length}</div>
-          <div style="font-size:0.8rem; color:var(--text-muted)">Testaram Ambos</div>
-        </div>
-        <div class="panel" style="text-align:center;">
-          <div style="font-size:2rem; color:var(--highlight); font-weight:700;">${soMinds}</div>
-          <div style="font-size:0.8rem; color:var(--text-muted)">Só Mindsight</div>
-        </div>
-        <div class="panel" style="text-align:center;">
-          <div style="font-size:2rem; color:var(--accent); font-weight:700;">${soVoxy}</div>
-          <div style="font-size:0.8rem; color:var(--text-muted)">Só Voxy</div>
-        </div>
-        <div class="panel" style="text-align:center;">
-          <div style="font-size:2rem; color:var(--invalid); font-weight:700;">${nenh}</div>
-          <div style="font-size:0.8rem; color:var(--text-muted)">Nenhum (Drop off)</div>
-        </div>
-      `);
-
-      // CSS Grid Heatmap Generator
-      let heatHTML = '<div class="heatmap-grid"><div class="heatmap-header" style="background:transparent;"></div>';
-      
-      const vLevels = ['A1', 'A2', 'B1', 'B2', 'C1']; // X axis
-      vLevels.forEach(v => heatHTML += `<div class="heatmap-header">${v}</div>`);
-      
-      const mindLevels = ['Superior', 'Médio Superior', 'Médio', 'Médio Inferior', 'Inferior']; // Y axis (inverted visual)
-      
-      let maxCell = 1;
-      const heatMapData = {};
-      mindLevels.forEach(m => {
-        heatMapData[m] = {};
-        vLevels.forEach(v => {
-          const c = validos.filter(d => d.mindsight === m && d.voxy === v).length;
-          heatMapData[m][v] = c;
-          if(c > maxCell) maxCell = c;
-        });
-      });
-
-      mindLevels.forEach(m => {
-        heatHTML += `<div class="heatmap-y-label">${m}</div>`;
-        vLevels.forEach(v => {
-          const count = heatMapData[m][v];
-          const intensity = count === 0 ? 0.02 : Math.max(0.12, count / maxCell);
-          const color = `rgba(140, 0, 73, ${intensity})`; // Magenta base opacity
-          let styleMod = count > 0 ? `cursor:pointer; font-weight:700; color:#fff;` : `color:rgba(255,255,255,0.2)`;
-          heatHTML += `<div class="heatmap-cell" style="background: ${color}; ${styleMod}" title="${count} candidatos (Mock)">${count}</div>`;
-        });
-      });
-      heatHTML += '</div>';
-      $('#matrix-container').html(heatHTML);
-
-
-      // ----------- C) CORRELATION TAB (Scatter Plot) ----------- 
-      const scatterSet = testaramAmbos.map(d => ({
-        x: parseFloat(d.qualified),
-        y: parseFloat(d.digai),
-        name: d.name,
-        isMinority: d.isMinority,
-        aprovadoFinal: d.phase2 === 'Oferta'
-      }));
-
-      const ctxScat = document.getElementById('scatterChart');
-      let isColorDi = false;
-      
-      const renderScatter = () => {
-        return new Chart(ctxScat, {
-          type: 'scatter',
-          data: {
-             // Divisão em dois datasets explícitos pelo toggle
-            datasets: [
-              {
-                label: isColorDi ? 'Minoria (Diversity)' : 'Hired (Offer Zone)',
-                data: scatterSet.filter(d => isColorDi ? d.isMinority : d.aprovadoFinal),
-                backgroundColor: isColorDi ? '#f472b6' : '#34d399',
-                pointRadius: 6,
-                borderColor: 'rgba(255,255,255,0.7)',
-                borderWidth: 1
-              },
-              {
-                label: isColorDi ? 'Demais Perfis' : 'Not Hired / Retidos',
-                data: scatterSet.filter(d => isColorDi ? !d.isMinority : !d.aprovadoFinal),
-                backgroundColor: 'rgba(255,255,255,0.15)',
-                pointRadius: 4,
-                borderWidth: 0
-              }
-            ]
-          },
-          options: {
-            responsive: true, maintainAspectRatio: false,
-            scales: {
-              x: { title: { display: true, text: 'Qualified Score (Threshold Técnico %)', color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 30, max: 100 },
-              y: { title: { display: true, text: 'Digaí Score (Threshold Cultural pt/10)', color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 5, max: 10.5 }
-            },
-            plugins: {
-              legend: { labels: { color: '#e2e8f0'} },
-              tooltip: {
-                callbacks: { label: (ctx) => `${ctx.raw.name} | Tech: ${ctx.raw.x}% | Fit: ${ctx.raw.y}` }
-              }
-            }
-          }
-        });
-      };
-      
-      let chartInst = renderScatter();
-      $('#toggle-scatter-di').click(function() {
-        isColorDi = !isColorDi;
-        chartInst.destroy();
-        chartInst = renderScatter();
-        // Update button text logic (not needed if it's broad text, but useful for feedback)
-      });
-
-
-      // ----------- D) D&I TAB (Diversity & Inclusion tracking) ----------- 
-      const buildBar = (title, items) => {
-        let t = sum = 0; items.forEach(i => t += i.v);
-        let html = `<div class="panel"><div class="panel-title">${title}</div>`;
-        items.forEach(i => {
-          const pct = Math.round((i.v / t) * 100) || 0;
-          html += `
-            <div class="di-row">
-              <div class="di-label"><span>${i.l}</span><span style="color:var(--text-muted)">${pct}% (${i.v})</span></div>
-              <div class="di-bar-track">
-                <div class="di-bar-fill" style="width:${pct}%; background:${i.c};"></div>
-              </div>
-            </div>
-          `;
-        });
-        html += `</div>`;
-        return html;
-      };
-
-      const hCount = validos.filter(d => d.gender === 'Homem').length;
-      const mCount = validos.filter(d => d.gender === 'Mulher').length;
-      const pCount = validos.filter(d => d.gender === 'Prefere não informar/Não-Binário').length;
-      const whiteC = validos.filter(d => d.race === 'Branco').length;
-      const blackC = validos.filter(d => d.race === 'Preto/Pardo').length;
-      const pcdY   = validos.filter(d => d.pcd === 'Sim').length;
-      const pcdN   = validos.filter(d => d.pcd === 'Não').length;
-
-      $('#di-bars-container').html(
-        buildBar('<i class="fas fa-venus-mars"></i> Gênero (Base Validada)', [
-          {l: 'Mulher', v: mCount, c: '#f472b6'}, {l: 'Homem', v: hCount, c: '#3b82f6'}, {l: 'Não Infor.', v: pCount, c: '#94a3b8'}
-        ]) +
-        buildBar('<i class="fas fa-globe"></i> Raça-Etnia', [
-          {l: 'Preto/Pardo (Autodeclarado)', v: blackC, c: '#c084fc'}, {l: 'Branco', v: whiteC, c: '#34d399'}
-        ]) +
-        buildBar('<i class="fas fa-wheelchair"></i> PCD', [
-          {l: 'Vaga Afirmativa', v: pcdY, c: '#fbbf24'}, {l: 'Não', v: pcdN, c: '#64748b'}
-        ])
-      );
-
-      // Survival Rate Line Chart
-      const minTotals = steps.map((s, idx) => {
-        let arr = [];
-        if(idx === 0) arr = dataSource;
-        if(idx === 1) arr = validos;
-        if(idx === 2) arr = testaramAmbos;
-        if(idx === 3) arr = aprovadosP1;
-        if(idx === 4) arr = aprovadosP2;
-        const minCount = arr.filter(d => d.isMinority).length;
-        return ((minCount / (arr.length || 1)) * 100).toFixed(1);
-      });
-
-      new Chart(document.getElementById('diFunnelChart'), {
-        type: 'line',
-        data: {
-          labels: ['1. Start', '2. Triage', '3. Tests', '4. Shortlist', '5. Hired'],
-          datasets: [{
-            label: '% Minorias Sobreviventes na Etapa (Mulheres, Negros, PCD)',
-            data: minTotals,
-            borderColor: '#f472b6',
-            backgroundColor: 'rgba(244, 114, 182, 0.2)',
-            fill: true,
-            pointRadius: 6,
-            pointBackgroundColor: '#c084fc',
-            tension: 0.25
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          scales: { 
-            y: { min: 0, max: 100, ticks: { callback: (v) => v + '%' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-            x: { grid: { color: 'rgba(255,255,255,0.05)' } }
-          },
-          plugins: { legend: { labels: { color: '#e2e8f0' } } }
-        }
-      });
-
-
-      // ----------- E) DATA REPORT TAB (DataTables Injection) ----------- 
-      const tbody = $('#dataTable tbody');
-      dataSource.forEach(d => {
-        const status = d.validStatus === 'Válido' ? `<span class="status-pill pill-green">Válido</span>` : `<span class="status-pill pill-red">Inválido</span>`;
-        const minHtml = d.isMinority ? `<span style="color:#f472b6" title="Cross-diversity"><i class="fas fa-star"></i> Sim</span>` : 'Não';
-        const p1Html = d.phase1 === 'Aprovado' ? `<span class="status-pill pill-blue">Aprovado</span>` : (d.phase1 === 'Reprovado'? `<span class="status-pill pill-gray">Reprov.</span>` : '-');
-        const p2Html = d.phase2 === 'Oferta' ? `<span class="status-pill pill-purple">Offer</span>` : (d.phase2 === 'No Offer'? `<span class="status-pill pill-gray">Drop</span>` : '-');
-        
-        tbody.append(`
-          <tr>
-            <td><strong>${d.name}</strong></td>
-            <td>${d.state}</td>
-            <td>${status}</td>
-            <td><small>${d.invalidReason}</small></td>
-            <td>${d.mindsight}</td>
-            <td>${d.voxy}</td>
-            <td>${d.qualified > 0 ? d.qualified : '-'}</td>
-            <td>${d.digai > 0 ? d.digai : '-'}</td>
-            <td>${minHtml}</td>
-            <td>${p1Html}</td>
-            <td>${p2Html}</td>
-          </tr>
-        `);
-      });
-
-      const table = $('#dataTable').DataTable({
-        pageLength: 20,
-        scrollX: true,
-        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json' },
-        dom: '<"top"lf>rt<"bottom"ip><"clear">', // clean native UI
-      });
-
-      // Custom Dropdown Filters Mapping
-      const filterFields = [
-        { id: 'f_status', label: 'Status Inicial', col: 2, opts: ['Válido', 'Inválido'] },
-        { id: 'f_estado', label: 'Estado/Regional', col: 1, opts: states },
-        { id: 'f_mindsight', label: 'Mindsight Textual', col: 4, opts: mindSights },
-        { id: 'f_fase1', label: 'Fase 1 (Shortlist)', col: 9, opts: ['Aprovado', 'Reprov.'] },
-        { id: 'f_offer', label: 'Fechamento de Posição', col: 10, opts: ['Offer', 'Drop'] }
-      ];
-
-      // Inject & Bind events for Custom Filters
-      filterFields.forEach(f => {
-        let html = `<div class="filter-group"><label>${f.label}</label><select id="${f.id}"><option value="">Toda a Base</option>`;
-        f.opts.forEach(o => html += `<option value="${o}">${o}</option>`);
-        html += `</select></div>`;
-        $('#report-filters').append(html);
-        
-        $(`#${f.id}`).on('change', function() {
-          const val = $.fn.dataTable.util.escapeRegex($(this).val());
-          table.column(f.col).search(val ? val : '', true, false).draw();
-        });
-      });
-
-      // CSV Export Button logic
-      $('#btn-export').click(function() {
-        let csv = 'Nome_Ficticio,Estado,Status_Triagem,Motivo_Invalidacao,Mindsight,Voxy,Qualified,Digai,Minority_Flag,Fase1,Oferta_Final\n';
-        // search "applied" allows exporting the filtered dataset!
-        table.rows({ search: 'applied' }).data().each(function (value) {
-            // Strip HTML tags before sending to CSV array line
-            csv += value.map(cell => `"${cell.replace(/<[^>]+>/g, '')}"`).join(',') + '\n';
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'export_nextgen_demo_data.csv';
-        a.click();
-      });
-
-    }
-
-    $(document).ready(initDashboard);
-  </script>
-</body>
+function renderTable(){applySort();const max=Math.max(0,Math.ceil(filtered.length/pageSize)-1);pageIndex=Math.min(pageIndex,max);$id('dataTable').querySelector('tbody').innerHTML=filtered.slice(pageIndex*pageSize,(pageIndex+1)*pageSize).map(d=>'<tr>'+rowValues(d).map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('');$id('page-info').textContent=`${filtered.length?pageIndex*pageSize+1:0}–${Math.min((pageIndex+1)*pageSize,filtered.length)} / ${filtered.length} ${L.showing}`;$id('prev-page').disabled=pageIndex===0;$id('next-page').disabled=pageIndex>=max;}
+function applyFilters(){const q=$id('table-search').value.toLowerCase();filtered=dataSource.filter(d=>filters.every((f,i)=>!$id('filter-'+i).value||d[f.key]===$id('filter-'+i).value)&&rowValues(d).join(' ').toLowerCase().includes(q));pageIndex=0;renderTable();}
+filters.forEach((f,i)=>$id('filter-'+i).addEventListener('change',applyFilters));$id('table-search').addEventListener('input',applyFilters);$id('prev-page').onclick=()=>{pageIndex--;renderTable();};$id('next-page').onclick=()=>{pageIndex++;renderTable();};renderTable();
+$id('btn-export').onclick=()=>{const csv='\ufeff'+L.export+'\n'+filtered.map(d=>rowValues(d).map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=EN?'nextgen-demo-en.csv':'nextgen-demo-pt.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn,.tab-content').forEach(el=>el.classList.remove('active'));btn.classList.add('active');$id(btn.dataset.target).classList.add('active');}));
+</script></body>
 </html>
